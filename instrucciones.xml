@@ -1,0 +1,686 @@
+<project_instructions>
+
+    <project>
+        <name>Nicolenails</name>
+        <type>Web de reservas para salón de uñas</type>
+
+        <description>
+            Crear una web moderna y profesional para un negocio de uñas llamado
+            "Nicolenails". La web debe permitir a los clientes consultar los
+            servicios disponibles y solicitar citas seleccionando el servicio,
+            fecha y hora disponibles.
+
+            El funcionamiento debe ser similar al concepto de Booksy, pero
+            adaptado a un único negocio de uñas y con una interfaz más
+            personalizada, elegante y sencilla.
+        </description>
+    </project>
+
+
+    <main_goal>
+
+        <description>
+            El objetivo principal de la web es gestionar las reservas de
+            clientes de Nicolenails.
+
+            El cliente debe poder:
+            - Consultar los servicios disponibles.
+            - Ver el precio y duración de cada servicio.
+            - Seleccionar un servicio.
+            - Seleccionar una fecha.
+            - Seleccionar una hora disponible.
+            - Introducir sus datos personales.
+            - Solicitar la cita.
+            - Recibir una confirmación de que la solicitud ha sido registrada.
+
+            El propietario debe poder:
+            - Ver todas las citas.
+            - Ver las citas pendientes.
+            - Ver qué cliente ha solicitado cada cita.
+            - Ver qué servicio quiere.
+            - Ver fecha y hora.
+            - Ver teléfono y correo electrónico.
+            - Aceptar una solicitud.
+            - Rechazar una solicitud.
+            - Gestionar los servicios.
+            - Gestionar la disponibilidad y horarios.
+        </description>
+
+    </main_goal>
+
+
+    <visual_identity>
+
+        <brand_name>Nicolenails</brand_name>
+
+        <colors>
+            <primary>Negro</primary>
+            <secondary>Dorado</secondary>
+        </colors>
+
+        <style>
+            Elegante, femenino, moderno, premium y minimalista.
+
+            El diseño debe utilizar principalmente negro y dorado,
+            evitando que el dorado resulte excesivo.
+
+            El resultado debe transmitir una sensación de salón de uñas
+            profesional y de gama media/alta.
+
+            Utilizar espacios en blanco, buena tipografía, bordes sutiles,
+            animaciones discretas y una jerarquía visual clara.
+
+            No utilizar diseños genéricos de plantilla de gimnasio,
+            peluquería o ecommerce.
+
+            La identidad debe sentirse específicamente creada para
+            Nicolenails.
+        </style>
+
+        <images>
+            Actualmente NO existen fotografías del negocio.
+
+            No inventar fotografías reales del salón, de las uñas ni de la
+            propietaria.
+
+            Si se necesitan imágenes para desarrollar la interfaz, utilizar
+            placeholders claramente identificados o diseñar la interfaz de
+            forma que pueda funcionar perfectamente sin fotografías.
+
+            La estructura debe permitir añadir fotografías posteriormente
+            sin tener que rediseñar la web.
+        </images>
+
+    </visual_identity>
+
+
+    <technology>
+
+        <frontend>
+            Utilizar una tecnología moderna y adecuada para una aplicación web
+            de reservas.
+
+            Priorizar:
+            - Buen rendimiento.
+            - Diseño responsive.
+            - Excelente experiencia en móvil.
+            - Código modular.
+            - Componentes reutilizables.
+            - Fácil mantenimiento.
+        </frontend>
+
+        <backend>
+            Utilizar Supabase si se necesita backend.
+
+            No crear un backend innecesariamente complejo si Supabase puede
+            resolverlo directamente.
+
+            Utilizar Supabase para:
+            - Base de datos.
+            - Autenticación si resulta necesaria.
+            - Gestión de usuarios si resulta necesaria.
+            - Almacenamiento de imágenes en el futuro.
+            - Seguridad mediante Row Level Security.
+        </backend>
+
+        <database>
+            Sí, se debe utilizar una base de datos.
+
+            Las reservas necesitan persistencia y deben poder ser consultadas
+            tanto por el propietario como por el sistema.
+
+            Diseñar una estructura de base de datos limpia y escalable.
+        </database>
+
+    </technology>
+
+
+    <database_design>
+
+        <requirement>
+            Antes de implementar la base de datos, analizar qué tablas son
+            realmente necesarias.
+
+            Como mínimo debería contemplarse una estructura similar a:
+        </requirement>
+
+        <tables>
+
+            <table name="services">
+                <purpose>
+                    Servicios que ofrece Nicolenails.
+                </purpose>
+
+                <fields>
+                    id
+                    name
+                    description
+                    price
+                    duration
+                    active
+                    created_at
+                    updated_at
+                </fields>
+            </table>
+
+            <table name="customers">
+                <purpose>
+                    Datos de los clientes que realizan reservas.
+                </purpose>
+
+                <fields>
+                    id
+                    name
+                    email
+                    phone
+                    created_at
+                    updated_at
+                </fields>
+            </table>
+
+            <table name="appointments">
+                <purpose>
+                    Reservas y solicitudes de citas.
+                </purpose>
+
+                <fields>
+                    id
+                    customer_id
+                    service_id
+                    date
+                    start_time
+                    end_time
+                    status
+                    notes
+                    created_at
+                    updated_at
+                </fields>
+
+                <statuses>
+                    pending
+                    accepted
+                    rejected
+                    cancelled
+                    completed
+                </statuses>
+            </table>
+
+            <table name="business_hours">
+                <purpose>
+                    Horario habitual de Nicolenails.
+                </purpose>
+
+                <fields>
+                    id
+                    day_of_week
+                    opening_time
+                    closing_time
+                    active
+                </fields>
+            </table>
+
+            <table name="blocked_slots">
+                <purpose>
+                    Periodos en los que no se pueden realizar reservas.
+                </purpose>
+
+                <fields>
+                    id
+                    date
+                    start_time
+                    end_time
+                    reason
+                    created_at
+                </fields>
+            </table>
+
+        </tables>
+
+        <important>
+            Esta estructura es orientativa.
+
+            Analizarla antes de implementarla y modificarla si existe una
+            arquitectura mejor.
+
+            Evitar crear tablas o campos innecesarios.
+        </important>
+
+    </database_design>
+
+
+    <booking_flow>
+
+        <step number="1">
+            El usuario entra en la web y selecciona "Reservar cita".
+        </step>
+
+        <step number="2">
+            Se muestran los servicios disponibles.
+        </step>
+
+        <step number="3">
+            El usuario selecciona un servicio.
+
+            Mostrar:
+            - Nombre.
+            - Descripción.
+            - Precio.
+            - Duración.
+        </step>
+
+        <step number="4">
+            El usuario selecciona una fecha.
+        </step>
+
+        <step number="5">
+            Mostrar únicamente las horas que pueden reservarse.
+
+            El sistema debe tener en cuenta:
+            - Horario del negocio.
+            - Duración del servicio.
+            - Citas ya existentes.
+            - Citas pendientes.
+            - Periodos bloqueados.
+        </step>
+
+        <step number="6">
+            El usuario selecciona una hora disponible.
+        </step>
+
+        <step number="7">
+            Solicitar los siguientes datos:
+
+            <customer_data>
+                <field>Nombre</field>
+                <field>Correo electrónico</field>
+                <field>Número de teléfono</field>
+            </customer_data>
+
+            Estos campos deben ser obligatorios.
+        </step>
+
+        <step number="8">
+            Antes de enviar la solicitud mostrar un resumen:
+
+            - Servicio.
+            - Duración.
+            - Precio.
+            - Fecha.
+            - Hora.
+            - Nombre.
+            - Correo.
+            - Teléfono.
+        </step>
+
+        <step number="9">
+            El cliente confirma la solicitud.
+        </step>
+
+        <step number="10">
+            Crear la cita con estado "pending".
+        </step>
+
+        <step number="11">
+            Mostrar al cliente un mensaje indicando que la solicitud ha sido
+            enviada y que está pendiente de confirmación por parte de
+            Nicolenails.
+        </step>
+
+    </booking_flow>
+
+
+    <appointment_management>
+
+        <description>
+            Las citas no deben aceptarse automáticamente.
+
+            Cuando un cliente solicita una cita, esta debe quedar en estado
+            "pending".
+
+            El propietario debe poder revisar la solicitud y decidir si
+            aceptarla o rechazarla.
+        </description>
+
+        <owner_view>
+
+            Mostrar como mínimo:
+
+            - Nombre del cliente.
+            - Email.
+            - Teléfono.
+            - Servicio solicitado.
+            - Precio.
+            - Duración.
+            - Fecha.
+            - Hora.
+            - Estado.
+            - Fecha de solicitud.
+
+        </owner_view>
+
+        <actions>
+
+            <accept>
+                Cambiar el estado de la cita a "accepted".
+            </accept>
+
+            <reject>
+                Cambiar el estado de la cita a "rejected".
+            </reject>
+
+            <cancel>
+                Permitir cancelar una cita cuando corresponda.
+            </cancel>
+
+        </actions>
+
+    </appointment_management>
+
+
+    <email_confirmation>
+
+        <requirement>
+            El correo electrónico del cliente debe utilizarse para enviar
+            información relacionada con la reserva.
+
+            Como mínimo se debe contemplar:
+
+            - Confirmación de recepción de la solicitud.
+            - Confirmación cuando el propietario acepta la cita.
+            - Aviso cuando el propietario rechaza la cita.
+        </requirement>
+
+        <implementation>
+            Investigar la opción más sencilla y económica para enviar emails
+            utilizando Supabase y/o un servicio externo compatible.
+
+            No implementar credenciales reales ni servicios de pago sin
+            indicarlo previamente.
+        </implementation>
+
+    </email_confirmation>
+
+
+    <owner_panel>
+
+        <description>
+            Crear una zona privada de administración para el propietario.
+        </description>
+
+        <features>
+
+            <appointments>
+                Gestión de citas.
+                Poder filtrar por:
+                - Pendientes.
+                - Aceptadas.
+                - Rechazadas.
+                - Canceladas.
+                - Completadas.
+            </appointments>
+
+            <calendar>
+                Vista de calendario para visualizar las citas.
+            </calendar>
+
+            <services>
+                Crear, editar, activar/desactivar y eliminar servicios.
+            </services>
+
+            <schedule>
+                Configurar los horarios de apertura.
+            </schedule>
+
+            <blocked_times>
+                Poder bloquear determinados días u horas.
+            </blocked_times>
+
+        </features>
+
+    </owner_panel>
+
+
+    <security>
+
+        <requirements>
+
+            Utilizar Row Level Security de Supabase.
+
+            Los clientes no deben poder acceder a información privada de
+            otros clientes.
+
+            Los clientes no deben poder modificar directamente el estado
+            de una cita.
+
+            Únicamente el propietario autorizado debe poder aceptar,
+            rechazar, cancelar o gestionar las citas.
+
+            No exponer claves privadas de Supabase en el frontend.
+
+            Validar los datos tanto en frontend como en backend cuando sea
+            necesario.
+
+        </requirements>
+
+    </security>
+
+
+    <responsive_design>
+
+        <requirement>
+            La web debe estar diseñada principalmente pensando en móvil,
+            pero debe funcionar perfectamente también en escritorio.
+        </requirement>
+
+        <mobile>
+            La reserva debe poder realizarse cómodamente con una sola mano.
+
+            Evitar formularios excesivamente largos.
+
+            Los botones de reserva deben ser claros y fáciles de pulsar.
+
+            El calendario y selección de horarios deben ser especialmente
+            cómodos en pantallas pequeñas.
+        </mobile>
+
+        <desktop>
+            En escritorio aprovechar el espacio para mostrar una interfaz
+            elegante y profesional.
+
+            El panel del propietario puede utilizar una interfaz más
+            administrativa.
+        </desktop>
+
+    </responsive_design>
+
+
+    <pages>
+
+        <page name="home">
+            Página principal de Nicolenails.
+
+            Debe incluir:
+            - Nombre/logo.
+            - Presentación del negocio.
+            - Servicios destacados.
+            - Botón principal "Reservar cita".
+            - Información básica del negocio.
+            - Espacio preparado para futuras fotografías.
+        </page>
+
+        <page name="services">
+            Listado de servicios disponibles.
+        </page>
+
+        <page name="booking">
+            Flujo completo de reserva.
+        </page>
+
+        <page name="booking-success">
+            Confirmación de solicitud enviada.
+        </page>
+
+        <page name="admin">
+            Panel privado del propietario.
+        </page>
+
+    </pages>
+
+
+    <ux>
+
+        <requirements>
+
+            El proceso de reserva debe ser sencillo y tener pocos pasos.
+
+            El usuario debe saber siempre:
+            - Qué servicio está reservando.
+            - Qué día.
+            - Qué hora.
+            - Cuánto cuesta.
+            - Cuánto dura.
+            - Que la cita todavía necesita ser aceptada.
+
+            Mostrar mensajes claros para:
+            - Horario no disponible.
+            - Hora ocupada.
+            - Reserva enviada.
+            - Reserva aceptada.
+            - Reserva rechazada.
+            - Error de conexión.
+            - Datos incorrectos.
+
+        </requirements>
+
+    </ux>
+
+
+    <future_features>
+
+        Diseñar la arquitectura de forma que posteriormente pueda añadirse:
+
+        - Galería de trabajos.
+        - Fotos de uñas.
+        - Perfil de la propietaria.
+        - Reviews de clientes.
+        - WhatsApp.
+        - Recordatorios automáticos.
+        - Cancelación por parte del cliente.
+        - Reprogramación de citas.
+        - Pagos online.
+        - Depósitos/señales para reservar.
+        - Promociones.
+        - Cupones.
+        - Estadísticas del negocio.
+        - Historial de clientes.
+        - Diferentes profesionales si el negocio crece.
+
+        No implementar estas funciones todavía salvo que sean necesarias
+        para la arquitectura actual.
+
+    </future_features>
+
+
+    <development_methodology>
+
+        <instruction>
+            Antes de escribir código, analiza la arquitectura completa.
+
+            Si necesitas tomar decisiones técnicas importantes, explícalas
+            brevemente y utiliza la solución más sencilla, mantenible y
+            escalable.
+        </instruction>
+
+        <code>
+            Crear código modular y reutilizable.
+
+            Evitar duplicación.
+
+            No crear componentes gigantescos.
+
+            Separar correctamente:
+            - UI.
+            - lógica de negocio.
+            - acceso a Supabase.
+            - modelos/tipos.
+            - autenticación.
+            - gestión de reservas.
+        </code>
+
+        <database>
+            Preparar también los SQL necesarios para crear las tablas,
+            relaciones, índices, políticas RLS y cualquier función necesaria
+            en Supabase.
+        </database>
+
+        <environment>
+            No introducir claves API, contraseñas o credenciales reales.
+
+            Utilizar variables de entorno.
+        </environment>
+
+    </development_methodology>
+
+
+    <important_rules>
+
+        <rule>
+            No inventar información sobre Nicolenails que todavía no se haya
+            proporcionado.
+        </rule>
+
+        <rule>
+            No inventar precios, servicios, horarios, dirección, teléfono,
+            email, fotografías o redes sociales.
+        </rule>
+
+        <rule>
+            Cuando falte información necesaria, utilizar placeholders claros
+            o preguntarme antes de asumir datos reales.
+        </rule>
+
+        <rule>
+            Si necesitas fotografías, iconos, logotipo o cualquier otro
+            recurso que todavía no exista, prepara el espacio para ellos
+            sin inventar contenido real.
+        </rule>
+
+        <rule>
+            Priorizar primero que el sistema de reservas funcione
+            correctamente y después perfeccionar detalles visuales.
+        </rule>
+
+        <rule>
+            Antes de realizar cambios importantes en una parte existente del
+            proyecto, revisar el código existente y reutilizar lo que ya
+            funcione.
+        </rule>
+
+        <rule>
+            No instalar dependencias innecesarias.
+        </rule>
+
+    </important_rules>
+
+
+    <first_task>
+
+        Empieza analizando el proyecto actual.
+
+        Determina:
+
+        1. Qué tecnología frontend se está utilizando.
+        2. Cómo está estructurado actualmente el proyecto.
+        3. Qué partes pueden reutilizarse.
+        4. Qué necesita Supabase.
+        5. Qué tablas y relaciones son necesarias.
+        6. Cómo implementarías el sistema de reservas.
+        7. Cómo implementarías el panel privado del propietario.
+        8. Qué información falta para poder hacer la web completamente real.
+
+        Después de este análisis, propón una arquitectura concreta y
+        comienza la implementación por las partes fundamentales.
+
+    </first_task>
+
+</project_instructions>
