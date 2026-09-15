@@ -12,9 +12,9 @@ interface SummaryStepProps {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-ink/10 py-3 last:border-0">
-      <span className="text-sm text-ink/50">{label}</span>
-      <span className="text-sm font-medium text-ink">{value}</span>
+    <div className="flex items-center justify-between border-b border-cream/10 py-3 last:border-0">
+      <span className="text-sm text-cream/50">{label}</span>
+      <span className="text-sm font-medium text-cream">{value}</span>
     </div>
   );
 }
@@ -22,12 +22,12 @@ function Row({ label, value }: { label: string; value: string }) {
 export function SummaryStep({ service, date, time, customer, error }: SummaryStepProps) {
   return (
     <div>
-      <h2 className="font-display text-xl font-semibold text-ink">Revisa tu reserva</h2>
-      <p className="mt-1 text-sm text-ink/50">
+      <h2 className="font-display text-xl font-semibold text-cream">Revisa tu reserva</h2>
+      <p className="mt-1 text-sm text-cream/50">
         Comprueba que todo es correcto antes de enviar la solicitud.
       </p>
 
-      <div className="mt-5 rounded-2xl border border-ink/10 bg-white px-5 py-2">
+      <div className="mt-5 rounded-2xl border border-cream/10 bg-ink-soft px-5 py-2">
         <Row label="Servicio" value={service.name} />
         <Row label="Duración" value={formatDuration(service.duration_minutes)} />
         <Row label="Precio" value={formatPrice(service.price)} />
@@ -38,13 +38,13 @@ export function SummaryStep({ service, date, time, customer, error }: SummarySte
         <Row label="Teléfono" value={customer.phone} />
       </div>
 
-      <div className="mt-5 rounded-xl border border-gold/30 bg-gold-soft/20 px-4 py-3 text-sm text-ink/70">
+      <div className="mt-5 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-cream/70">
         Al confirmar, tu solicitud quedará <strong>pendiente de confirmación</strong> por parte
         de Nicolenails. Te avisaremos por correo en cuanto la revisemos.
       </div>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           {error}
         </div>
       )}

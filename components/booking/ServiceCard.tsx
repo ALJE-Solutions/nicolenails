@@ -14,27 +14,27 @@ export function ServiceCard({ service, href, selected, onSelect }: ServiceCardPr
   const content = (
     <>
       <div className="flex items-start justify-between gap-4">
-        <h3 className="font-display text-lg font-semibold text-ink">{service.name}</h3>
-        <span className="whitespace-nowrap font-display text-lg font-semibold text-gold-deep">
+        <h3 className="font-display text-lg font-semibold text-cream">{service.name}</h3>
+        <span className="whitespace-nowrap font-display text-lg font-semibold text-gold">
           {formatPrice(service.price)}
         </span>
       </div>
 
       {service.description && (
-        <p className="mt-2 text-sm leading-relaxed text-ink/60">{service.description}</p>
+        <p className="mt-2 text-sm leading-relaxed text-cream/60">{service.description}</p>
       )}
 
-      <p className="mt-4 text-xs font-medium tracking-wide text-ink/40 uppercase">
+      <p className="mt-4 text-xs font-medium tracking-wide text-cream/40 uppercase">
         {formatDuration(service.duration_minutes)}
       </p>
     </>
   );
 
   const baseClasses = cn(
-    "block rounded-2xl border bg-white p-6 text-left transition-all duration-200",
+    "block rounded-2xl border bg-ink-soft p-6 text-left transition-all duration-200",
     selected
       ? "border-gold shadow-[0_0_0_1px_rgba(201,161,90,0.5)]"
-      : "border-ink/10 hover:border-gold/50 hover:shadow-sm"
+      : "border-cream/10 hover:border-gold/50 hover:shadow-sm"
   );
 
   if (href) {

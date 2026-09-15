@@ -38,7 +38,7 @@ export function ServiceForm({ service, onDone }: ServiceFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-cream-soft/50 p-5"
+      className="flex flex-col gap-4 rounded-2xl border border-gold/30 bg-gold/5 p-5"
     >
       <Field label="Nombre" htmlFor="name" required>
         <Input id="name" name="name" required defaultValue={service?.name} />
@@ -74,7 +74,7 @@ export function ServiceForm({ service, onDone }: ServiceFormProps) {
         </Field>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isPending}>

@@ -11,8 +11,8 @@ interface ServiceStepProps {
 export function ServiceStep({ services, selectedId, onSelect }: ServiceStepProps) {
   return (
     <div>
-      <h2 className="font-display text-xl font-semibold text-ink">Elige tu servicio</h2>
-      <p className="mt-1 text-sm text-ink/50">Precio y duración de cada servicio.</p>
+      <h2 className="font-display text-xl font-semibold text-cream">Elige tu servicio</h2>
+      <p className="mt-1 text-sm text-cream/50">Precio y duración de cada servicio.</p>
 
       <div className="mt-5">
         {services.length === 0 ? (

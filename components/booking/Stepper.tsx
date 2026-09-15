@@ -16,8 +16,8 @@ export function Stepper({ current }: { current: number }) {
               className={cn(
                 "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                 isDone && "bg-gold text-ink",
-                isActive && "bg-ink text-cream",
-                !isDone && !isActive && "bg-ink/10 text-ink/40"
+                isActive && "border border-gold text-gold",
+                !isDone && !isActive && "bg-cream/10 text-cream/40"
               )}
             >
               {isDone ? "✓" : step}
@@ -25,14 +25,14 @@ export function Stepper({ current }: { current: number }) {
             <span
               className={cn(
                 "hidden text-xs font-medium sm:inline",
-                isActive ? "text-ink" : "text-ink/40"
+                isActive ? "text-cream" : "text-cream/40"
               )}
             >
               {label}
             </span>
             {step < STEP_LABELS.length && (
               <div
-                className={cn("h-px flex-1", isDone ? "bg-gold" : "bg-ink/10")}
+                className={cn("h-px flex-1", isDone ? "bg-gold" : "bg-cream/10")}
                 aria-hidden="true"
               />
             )}

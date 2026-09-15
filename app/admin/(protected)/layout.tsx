@@ -38,8 +38,8 @@ export default async function ProtectedAdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream sm:flex-row">
-      <aside className="border-b border-ink/10 bg-ink px-5 py-4 sm:min-h-screen sm:w-64 sm:border-r sm:border-b-0 sm:px-6 sm:py-8">
+    <div className="flex min-h-screen flex-col bg-ink sm:flex-row">
+      <aside className="border-b border-cream/10 bg-ink-soft px-5 py-4 sm:min-h-screen sm:w-64 sm:border-r sm:border-b-0 sm:px-6 sm:py-8">
         <AdminNav />
       </aside>
       <main className="flex-1 px-5 py-8 sm:px-10 sm:py-10">{children}</main>

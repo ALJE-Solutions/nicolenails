@@ -3,7 +3,7 @@ import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
 const fieldClasses =
-  "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-base text-ink placeholder:text-ink/40 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold-soft disabled:opacity-50";
+  "w-full rounded-lg border border-cream/15 bg-cream/5 px-4 py-3 text-base text-cream placeholder:text-cream/40 transition-colors focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30 disabled:opacity-50";
 
 interface FieldWrapperProps {
   label: string;
@@ -24,12 +24,12 @@ export function Field({
 }: FieldWrapperProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className={cn("text-sm font-medium text-ink/80", labelClassName)}>
+      <label htmlFor={htmlFor} className={cn("text-sm font-medium text-cream/80", labelClassName)}>
         {label}
-        {required && <span className="text-gold-deep"> *</span>}
+        {required && <span className="text-gold"> *</span>}
       </label>
       {children}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
     </div>
   );
 }

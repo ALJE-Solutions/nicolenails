@@ -37,11 +37,23 @@ export async function signOut() {
 // Citas
 // ---------------------------------------------------------------------------
 
-export async function updateAppointmentStatus(id: string, status: AppointmentStatus) {
+export async function updateAppointmentStatus(
+  id: string,
+  status: AppointmentStatus,
+  staffId?: string
+) {
   const supabase = await createClient();
-  const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
+  const payload: { status: AppointmentStatus; staff_id?: string } = { status };
+  if (status === "accepted" && staffId) {
+    payload.staff_id = staffId;
+  }
+
+  const { error } = await supabase.from("appointments").update(payload).eq("id", id);
 
   if (error) {
+    if (error.code === "23P01") {
+      return { error: "Esa persona ya tiene otra cita asignada en ese horario. Elige otra." };
+    }
     return { error: "No se ha podido actualizar la cita." };
   }
 
@@ -113,27 +125,82 @@ export async function deleteService(id: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Personal
+// ---------------------------------------------------------------------------
+
+export async function createStaff(formData: FormData) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("staff").insert({
+    name: str(formData, "name"),
+  });
+
+  if (error) return { error: "No se ha podido crear el miembro del personal." };
+
+  revalidatePath("/admin/personal");
+  return { error: null };
+}
+
+export async function updateStaff(id: string, formData: FormData) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("staff")
+    .update({ name: str(formData, "name") })
+    .eq("id", id);
+
+  if (error) return { error: "No se ha podido actualizar el personal." };
+
+  revalidatePath("/admin/personal");
+  return { error: null };
+}
+
+export async function toggleStaffActive(id: string, active: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("staff").update({ active }).eq("id", id);
+
+  if (error) return { error: "No se ha podido cambiar el estado del personal." };
+
+  revalidatePath("/admin/personal");
+  return { error: null };
+}
+
+export async function deleteStaff(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("staff").delete().eq("id", id);
+
+  if (error) {
+    return {
+      error:
+        "No se ha podido eliminar (puede tener citas asociadas). Puedes desactivarlo en su lugar.",
+    };
+  }
+
+  revalidatePath("/admin/personal");
+  return { error: null };
+}
+
+// ---------------------------------------------------------------------------
 // Horario
 // ---------------------------------------------------------------------------
 
-export async function upsertBusinessHour(formData: FormData) {
+export async function createBusinessHourShift(formData: FormData) {
   const supabase = await createClient();
-  const dayOfWeek = Number(str(formData, "day_of_week"));
-  const active = formData.get("active") === "on";
+  const { error } = await supabase.from("business_hours").insert({
+    day_of_week: Number(str(formData, "day_of_week")),
+    opening_time: str(formData, "opening_time"),
+    closing_time: str(formData, "closing_time"),
+  });
 
-  const { error } = await supabase
-    .from("business_hours")
-    .upsert(
-      {
-        day_of_week: dayOfWeek,
-        opening_time: str(formData, "opening_time"),
-        closing_time: str(formData, "closing_time"),
-        active,
-      },
-      { onConflict: "day_of_week" }
-    );
+  if (error) return { error: "No se ha podido añadir el tramo (¿cierre antes que apertura?)." };
 
-  if (error) return { error: "No se ha podido guardar el horario." };
+  revalidatePath("/admin/horarios");
+  return { error: null };
+}
+
+export async function deleteBusinessHourShift(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("business_hours").delete().eq("id", id);
+
+  if (error) return { error: "No se ha podido eliminar el tramo." };
 
   revalidatePath("/admin/horarios");
   return { error: null };

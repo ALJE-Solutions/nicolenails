@@ -1,7 +1,8 @@
 import { StatusFilter } from "@/components/admin/StatusFilter";
 import { AppointmentCard } from "@/components/admin/AppointmentCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { getAppointments } from "@/lib/admin/queries";
+import { getAcceptedStaffBookings, getAllStaff, getAppointments } from "@/lib/admin/queries";
+import { availableStaffFor } from "@/lib/admin/staffAvailability";
 import type { AppointmentStatus } from "@/lib/types/database";
 
 const VALID_STATUSES: (AppointmentStatus | "all")[] = [
@@ -23,12 +24,16 @@ export default async function CitasPage({ searchParams }: CitasPageProps) {
     ? (statusParam as AppointmentStatus | "all")
     : "pending";
 
-  const appointments = await getAppointments(status);
+  const [appointments, staff, staffBookings] = await Promise.all([
+    getAppointments(status),
+    getAllStaff(),
+    getAcceptedStaffBookings(),
+  ]);
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold text-ink">Citas</h1>
-      <p className="mt-1 text-sm text-ink/50">
+      <h1 className="font-display text-2xl font-semibold text-cream">Citas</h1>
+      <p className="mt-1 text-sm text-cream/50">
         Revisa las solicitudes y decide si aceptarlas o rechazarlas.
       </p>
 
@@ -44,7 +49,15 @@ export default async function CitasPage({ searchParams }: CitasPageProps) {
           />
         ) : (
           appointments.map((appointment) => (
-            <AppointmentCard key={appointment.id} appointment={appointment} />
+            <AppointmentCard
+              key={appointment.id}
+              appointment={appointment}
+              availableStaff={
+                appointment.status === "pending"
+                  ? availableStaffFor(staff, staffBookings, appointment)
+                  : []
+              }
+            />
           ))
         )}
       </div>

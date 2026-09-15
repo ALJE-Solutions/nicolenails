@@ -14,8 +14,8 @@ export function DateStep({ selectedDate, onSelect }: DateStepProps) {
 
   return (
     <div>
-      <h2 className="font-display text-xl font-semibold text-ink">¿Qué día te viene bien?</h2>
-      <p className="mt-1 text-sm text-ink/50">Desliza para ver más fechas disponibles.</p>
+      <h2 className="font-display text-xl font-semibold text-cream">¿Qué día te viene bien?</h2>
+      <p className="mt-1 text-sm text-cream/50">Desliza para ver más fechas disponibles.</p>
 
       <div className="mt-5 -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-2">
         {days.map((day) => {
@@ -29,14 +29,14 @@ export function DateStep({ selectedDate, onSelect }: DateStepProps) {
               className={cn(
                 "flex w-16 shrink-0 snap-start flex-col items-center gap-1 rounded-xl border px-2 py-3 transition-colors",
                 isSelected
-                  ? "border-gold bg-ink text-cream"
-                  : "border-ink/10 bg-white text-ink hover:border-gold/50"
+                  ? "border-gold bg-gold text-ink"
+                  : "border-cream/15 bg-ink-soft text-cream hover:border-gold/50"
               )}
             >
               <span
                 className={cn(
                   "text-[11px] font-medium uppercase",
-                  isSelected ? "text-gold-soft" : "text-ink/40"
+                  isSelected ? "text-ink/70" : "text-cream/40"
                 )}
               >
                 {day.weekdayLabel}
@@ -45,7 +45,7 @@ export function DateStep({ selectedDate, onSelect }: DateStepProps) {
               <span
                 className={cn(
                   "text-[11px] uppercase",
-                  isSelected ? "text-gold-soft" : "text-ink/40"
+                  isSelected ? "text-ink/70" : "text-cream/40"
                 )}
               >
                 {day.monthLabel}

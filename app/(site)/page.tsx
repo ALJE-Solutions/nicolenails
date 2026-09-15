@@ -14,13 +14,13 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-24">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="text-xs font-semibold tracking-[0.2em] text-gold-deep uppercase">
+            <p className="text-xs font-semibold tracking-[0.2em] text-gold uppercase">
               Salón de uñas
             </p>
-            <h1 className="mt-4 font-display text-4xl leading-tight font-semibold text-ink sm:text-5xl">
+            <h1 className="mt-4 font-display text-4xl leading-tight font-semibold text-cream sm:text-5xl">
               Cuidado de uñas con un toque elegante y personal
             </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-ink/60">
+            <p className="mt-5 max-w-md text-base leading-relaxed text-cream/60">
               Reserva tu cita en Nicolenails en pocos pasos: elige tu servicio,
               el día y la hora que mejor te vengan.
             </p>
@@ -38,20 +38,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-ink/10 bg-cream-soft/60">
+      <section className="border-t border-cream/10 bg-ink-soft/40">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-semibold tracking-[0.2em] text-gold-deep uppercase">
+              <p className="text-xs font-semibold tracking-[0.2em] text-gold uppercase">
                 Servicios destacados
               </p>
-              <h2 className="mt-2 font-display text-3xl font-semibold text-ink">
+              <h2 className="mt-2 font-display text-3xl font-semibold text-cream">
                 Lo que hacemos
               </h2>
             </div>
             <Link
               href="/servicios"
-              className="text-sm font-medium text-ink/60 underline decoration-gold/50 underline-offset-4 transition-colors hover:text-ink"
+              className="text-sm font-medium text-cream/60 underline decoration-gold/50 underline-offset-4 transition-colors hover:text-cream"
             >
               Ver todos los servicios
             </Link>
@@ -77,20 +77,20 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="grid gap-10 sm:grid-cols-3">
           <div>
-            <h3 className="font-display text-lg font-semibold text-ink">Reserva sencilla</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/60">
+            <h3 className="font-display text-lg font-semibold text-cream">Reserva sencilla</h3>
+            <p className="mt-2 text-sm leading-relaxed text-cream/60">
               Elige servicio, fecha y hora disponible en menos de un minuto.
             </p>
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold text-ink">Confirmación personal</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/60">
+            <h3 className="font-display text-lg font-semibold text-cream">Confirmación personal</h3>
+            <p className="mt-2 text-sm leading-relaxed text-cream/60">
               Cada solicitud la revisa Nicolenails antes de confirmarse.
             </p>
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold text-ink">Trato cercano</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/60">
+            <h3 className="font-display text-lg font-semibold text-cream">Trato cercano</h3>
+            <p className="mt-2 text-sm leading-relaxed text-cream/60">
               Un servicio pensado para cuidarte con calma y atención al detalle.
             </p>
           </div>

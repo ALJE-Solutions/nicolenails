@@ -36,8 +36,8 @@ export function BlockedSlotsManager({ slots }: { slots: BlockedSlot[] }) {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold text-ink">Bloqueos</h1>
-      <p className="mt-1 text-sm text-ink/50">
+      <h1 className="font-display text-2xl font-semibold text-cream">Bloqueos</h1>
+      <p className="mt-1 text-sm text-cream/50">
         Bloquea días completos (vacaciones, festivos) u horas concretas. Deja las horas en blanco
         para bloquear el día entero.
       </p>
@@ -45,7 +45,7 @@ export function BlockedSlotsManager({ slots }: { slots: BlockedSlot[] }) {
       <form
         key={formKey}
         onSubmit={handleSubmit}
-        className="mt-6 grid gap-4 rounded-2xl border border-ink/10 bg-white p-5 sm:grid-cols-4"
+        className="mt-6 grid gap-4 rounded-2xl border border-cream/10 bg-ink-soft p-5 sm:grid-cols-4"
       >
         <Field label="Fecha" htmlFor="date" required>
           <Input id="date" name="date" type="date" required />
@@ -60,7 +60,7 @@ export function BlockedSlotsManager({ slots }: { slots: BlockedSlot[] }) {
           <Input id="reason" name="reason" placeholder="Vacaciones, festivo…" />
         </Field>
 
-        {error && <p className="sm:col-span-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="sm:col-span-4 text-sm text-red-400">{error}</p>}
 
         <div className="sm:col-span-4">
           <Button type="submit" disabled={isPending}>
@@ -76,11 +76,11 @@ export function BlockedSlotsManager({ slots }: { slots: BlockedSlot[] }) {
           slots.map((slot) => (
             <div
               key={slot.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ink/10 bg-white px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cream/10 bg-ink-soft px-4 py-3"
             >
               <div className="text-sm">
-                <p className="font-medium text-ink capitalize">{formatDateLong(slot.date)}</p>
-                <p className="text-ink/50">
+                <p className="font-medium text-cream capitalize">{formatDateLong(slot.date)}</p>
+                <p className="text-cream/50">
                   {slot.start_time && slot.end_time
                     ? `${formatTime(slot.start_time)} – ${formatTime(slot.end_time)}`
                     : "Día completo"}

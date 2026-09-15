@@ -27,25 +27,17 @@ export default function AdminLoginPage() {
         <p className="mt-1 text-sm text-cream/50">Acceso exclusivo para la propietaria.</p>
 
         <form action={formAction} className="mt-8 flex flex-col gap-4">
-          <Field label="Email" htmlFor="email" required labelClassName="!text-cream/70">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              className="!bg-cream/5 !text-cream placeholder:!text-cream/30 !border-cream/15"
-            />
+          <Field label="Email" htmlFor="email" required>
+            <Input id="email" name="email" type="email" required autoComplete="email" />
           </Field>
 
-          <Field label="Contraseña" htmlFor="password" required labelClassName="!text-cream/70">
+          <Field label="Contraseña" htmlFor="password" required>
             <Input
               id="password"
               name="password"
               type="password"
               required
               autoComplete="current-password"
-              className="!bg-cream/5 !text-cream placeholder:!text-cream/30 !border-cream/15"
             />
           </Field>
 
