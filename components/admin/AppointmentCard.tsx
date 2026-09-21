@@ -80,7 +80,7 @@ export function AppointmentCard({ appointment, availableStaff = [] }: Appointmen
 
       {appointment.status === "pending" && (
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          {availableStaff.length > 0 ? (
+          {availableStaff.length > 1 ? (
             <select
               value={staffId}
               onChange={(e) => setStaffId(e.target.value)}
@@ -93,6 +93,10 @@ export function AppointmentCard({ appointment, availableStaff = [] }: Appointmen
                 </option>
               ))}
             </select>
+          ) : availableStaff.length === 1 ? (
+            <p className="text-sm text-cream/50">
+              Se asignará a <span className="text-gold">{availableStaff[0].name}</span>.
+            </p>
           ) : (
             <p className="text-sm text-red-400">Nadie está libre en ese horario.</p>
           )}
