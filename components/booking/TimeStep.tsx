@@ -40,24 +40,24 @@ export function TimeStep({ serviceId, date, selectedTime, onSelect }: TimeStepPr
 
   return (
     <div>
-      <h2 className="font-display text-xl font-semibold text-ink">¿A qué hora?</h2>
-      <p className="mt-1 text-sm text-ink/50">Solo se muestran las horas realmente disponibles.</p>
+      <h2 className="font-display text-xl font-semibold text-cream">¿A qué hora?</h2>
+      <p className="mt-1 text-sm text-cream/50">Solo se muestran las horas realmente disponibles.</p>
 
       <div className="mt-5">
         {state === "loading" && (
-          <p className="rounded-xl border border-ink/10 bg-white px-4 py-6 text-center text-sm text-ink/50">
+          <p className="rounded-xl border border-cream/10 bg-ink-soft px-4 py-6 text-center text-sm text-cream/50">
             Comprobando horario disponible…
           </p>
         )}
 
         {state === "error" && (
-          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-6 text-center text-sm text-red-700">
+          <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-6 text-center text-sm text-red-300">
             No se ha podido comprobar la disponibilidad. Revisa tu conexión e inténtalo de nuevo.
           </p>
         )}
 
         {state === "ready" && slots.length === 0 && (
-          <p className="rounded-xl border border-ink/10 bg-white px-4 py-6 text-center text-sm text-ink/50">
+          <p className="rounded-xl border border-cream/10 bg-ink-soft px-4 py-6 text-center text-sm text-cream/50">
             No quedan horas disponibles ese día. Prueba con otra fecha.
           </p>
         )}
@@ -75,8 +75,8 @@ export function TimeStep({ serviceId, date, selectedTime, onSelect }: TimeStepPr
                   className={cn(
                     "rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
                     isSelected
-                      ? "border-gold bg-ink text-cream"
-                      : "border-ink/10 bg-white text-ink hover:border-gold/50"
+                      ? "border-gold bg-gold text-ink"
+                      : "border-cream/15 bg-ink-soft text-cream hover:border-gold/50"
                   )}
                 >
                   {formatTime(slot.slot_start)}

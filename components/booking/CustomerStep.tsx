@@ -22,8 +22,8 @@ export function CustomerStep({ defaultValues, onSubmit }: CustomerStepProps) {
 
   return (
     <div>
-      <h2 className="font-display text-xl font-semibold text-ink">Tus datos</h2>
-      <p className="mt-1 text-sm text-ink/50">Los necesitamos para confirmarte la cita.</p>
+      <h2 className="font-display text-xl font-semibold text-cream">Tus datos</h2>
+      <p className="mt-1 text-sm text-cream/50">Los necesitamos para confirmarte la cita.</p>
 
       <form
         id="customer-form"

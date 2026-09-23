@@ -40,28 +40,28 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">Calendario</h1>
-          <p className="mt-1 text-sm text-ink/50 capitalize">{MONTH_LABEL(monthDate)}</p>
+          <h1 className="font-display text-2xl font-semibold text-cream">Calendario</h1>
+          <p className="mt-1 text-sm text-cream/50 capitalize">{MONTH_LABEL(monthDate)}</p>
         </div>
         <div className="flex gap-2">
           <Link
             href={`/admin/calendario?month=${shiftMonthParam(monthDate, -1)}`}
-            className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-medium text-ink/60 hover:border-gold/50"
+            className="rounded-full border border-cream/15 px-4 py-1.5 text-sm font-medium text-cream/60 hover:border-gold/50"
           >
             ← Anterior
           </Link>
           <Link
             href={`/admin/calendario?month=${shiftMonthParam(monthDate, 1)}`}
-            className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-medium text-ink/60 hover:border-gold/50"
+            className="rounded-full border border-cream/15 px-4 py-1.5 text-sm font-medium text-cream/60 hover:border-gold/50"
           >
             Siguiente →
           </Link>
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 text-xs">
+      <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-cream/10 bg-cream/10 text-xs">
         {WEEKDAY_HEADERS.map((day) => (
-          <div key={day} className="bg-cream-soft px-2 py-2 text-center font-semibold text-ink/50">
+          <div key={day} className="bg-ink-soft px-2 py-2 text-center font-semibold text-cream/50">
             {day}
           </div>
         ))}
@@ -72,14 +72,14 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
             <div
               key={day.iso}
               className={cn(
-                "min-h-24 bg-white p-1.5 sm:min-h-32 sm:p-2",
-                !day.inCurrentMonth && "bg-cream-soft/40"
+                "min-h-24 bg-ink-soft p-1.5 sm:min-h-32 sm:p-2",
+                !day.inCurrentMonth && "bg-ink-soft/30"
               )}
             >
               <span
                 className={cn(
                   "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
-                  day.isToday ? "bg-ink text-cream" : day.inCurrentMonth ? "text-ink" : "text-ink/30"
+                  day.isToday ? "bg-gold text-ink" : day.inCurrentMonth ? "text-cream" : "text-cream/30"
                 )}
               >
                 {format(day.date, "d")}
@@ -89,14 +89,14 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
                 {dayAppointments.slice(0, 3).map((appointment) => (
                   <div
                     key={appointment.id}
-                    className="truncate rounded bg-cream-soft px-1.5 py-0.5 text-[11px] text-ink/70"
+                    className="truncate rounded bg-cream/10 px-1.5 py-0.5 text-[11px] text-cream/70"
                     title={`${formatTime(appointment.start_time)} · ${appointment.customer.name}`}
                   >
                     {formatTime(appointment.start_time)} {appointment.customer.name}
                   </div>
                 ))}
                 {dayAppointments.length > 3 && (
-                  <span className="text-[11px] text-ink/40">
+                  <span className="text-[11px] text-cream/40">
                     +{dayAppointments.length - 3} más
                   </span>
                 )}
@@ -107,12 +107,12 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
       </div>
 
       <div className="mt-8">
-        <h2 className="font-display text-lg font-semibold text-ink">Este mes de un vistazo</h2>
-        <div className="mt-3 flex flex-wrap gap-2 text-sm text-ink/60">
+        <h2 className="font-display text-lg font-semibold text-cream">Este mes de un vistazo</h2>
+        <div className="mt-3 flex flex-wrap gap-2 text-sm text-cream/60">
           {STATUS_ORDER.map((status) => {
             const count = appointments.filter((a) => a.status === status).length;
             return (
-              <div key={status} className="flex items-center gap-2 rounded-full border border-ink/10 bg-white px-3 py-1.5">
+              <div key={status} className="flex items-center gap-2 rounded-full border border-cream/10 bg-ink-soft px-3 py-1.5">
                 <StatusBadge status={status} />
                 <span>{count}</span>
               </div>

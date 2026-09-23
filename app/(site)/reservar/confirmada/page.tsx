@@ -17,15 +17,15 @@ export default function ReservaConfirmadaPage() {
 
   return (
     <section className="mx-auto flex max-w-lg flex-col items-center px-5 py-20 text-center sm:px-8">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold-soft/50 text-3xl text-gold-deep">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/40 bg-gold/15 text-3xl text-gold">
         ✓
       </div>
 
-      <h1 className="mt-6 font-display text-3xl font-semibold text-ink">
+      <h1 className="mt-6 font-display text-3xl font-semibold text-cream">
         Solicitud enviada
       </h1>
 
-      <p className="mt-3 text-base leading-relaxed text-ink/60">
+      <p className="mt-3 text-base leading-relaxed text-cream/60">
         {confirmation
           ? `Gracias, ${confirmation.customerName}. Tu solicitud para el ${formatDateLong(
               confirmation.date

@@ -10,8 +10,8 @@
   --color-gold-soft: #e4d3ab;
   --color-gold-deep: #a67f3c;
 
-  --background: var(--color-cream);
-  --foreground: var(--color-ink);
+  --background: var(--color-ink);
+  --foreground: var(--color-cream);
 
   --font-display: var(--font-playfair);
   --font-body: var(--font-inter);

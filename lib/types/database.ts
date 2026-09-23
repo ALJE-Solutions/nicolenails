@@ -25,10 +25,19 @@ export type Customer = {
   updated_at: string;
 };
 
+export type Staff = {
+  id: string;
+  name: string;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Appointment = {
   id: string;
   customer_id: string;
   service_id: string;
+  staff_id: string | null;
   date: string; // YYYY-MM-DD
   start_time: string; // HH:MM:SS
   end_time: string; // HH:MM:SS
@@ -41,6 +50,7 @@ export type Appointment = {
 export type AppointmentWithRelations = Appointment & {
   customer: Customer;
   service: Service;
+  staff: Staff | null;
 };
 
 export type BusinessHour = {
@@ -48,7 +58,6 @@ export type BusinessHour = {
   day_of_week: number; // 0 (domingo) .. 6 (sábado)
   opening_time: string;
   closing_time: string;
-  active: boolean;
 };
 
 export type BlockedSlot = {
@@ -100,7 +109,20 @@ export type Database = {
             referencedRelation: "services";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "appointments_staff_id_fkey";
+            columns: ["staff_id"];
+            isOneToOne: false;
+            referencedRelation: "staff";
+            referencedColumns: ["id"];
+          },
         ];
+      };
+      staff: {
+        Row: Staff;
+        Insert: Partial<Staff> & Pick<Staff, "name">;
+        Update: Partial<Staff>;
+        Relationships: [];
       };
       business_hours: {
         Row: BusinessHour;

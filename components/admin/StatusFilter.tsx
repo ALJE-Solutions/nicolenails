@@ -23,8 +23,8 @@ export function StatusFilter({ current }: { current: AppointmentStatus | "all" }
             className={cn(
               "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
               active
-                ? "border-ink bg-ink text-cream"
-                : "border-ink/15 text-ink/60 hover:border-gold/50"
+                ? "border-gold bg-gold text-ink"
+                : "border-cream/15 text-cream/60 hover:border-gold/50"
             )}
           >
             {option.label}

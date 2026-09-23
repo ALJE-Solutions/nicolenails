@@ -15,13 +15,13 @@ export default async function ServiciosPage() {
 
   return (
     <section className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
-      <p className="text-xs font-semibold tracking-[0.2em] text-gold-deep uppercase">
+      <p className="text-xs font-semibold tracking-[0.2em] text-gold uppercase">
         Carta de servicios
       </p>
-      <h1 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl">
+      <h1 className="mt-2 font-display text-3xl font-semibold text-cream sm:text-4xl">
         Nuestros servicios
       </h1>
-      <p className="mt-3 max-w-xl text-base text-ink/60">
+      <p className="mt-3 max-w-xl text-base text-cream/60">
         Precio y duración orientativos de cada servicio. Selecciona uno para empezar tu reserva.
       </p>
 

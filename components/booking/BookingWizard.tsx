@@ -137,7 +137,7 @@ export function BookingWizard({ services }: BookingWizardProps) {
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-ink/10 pt-6">
+      <div className="flex items-center justify-between gap-3 border-t border-cream/10 pt-6">
         <Button
           type="button"
           variant="ghost"
