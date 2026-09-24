@@ -128,37 +128,28 @@ function cancelButtonHtml(cancelUrl: string): string {
   `;
 }
 
-function googleCalendarButtonHtml(googleCalendarUrl: string): string {
+// Botón de calendario genérico (Google Calendar o el .ics hospedado en la
+// propia web para Apple Calendar/Outlook) — un solo toque, sin adjuntos: al
+// pulsar el enlace, el navegador/OS lo abre directamente en la app de
+// calendario correspondiente.
+function calendarButtonHtml(url: string, label: string): string {
   return `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 4px 0 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 6px 0 0;">
       <tr>
         <td style="border-radius: 999px; border: 1px solid ${COLOR_GOLD_SOFT};">
-          <a href="${googleCalendarUrl}" style="display: inline-block; padding: 11px 24px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; color: ${COLOR_INK}; text-decoration: none;">
-            Añadir a Google Calendar
+          <a href="${url}" style="display: inline-block; padding: 11px 24px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; color: ${COLOR_INK}; text-decoration: none;">
+            ${label}
           </a>
         </td>
       </tr>
     </table>
-    <p style="margin: 8px 0 0; font-family: Arial, Helvetica, sans-serif; color: ${COLOR_MUTED}; font-size: 13px;">
-      ¿Usas Apple Calendar u Outlook? Este correo lleva adjunto un archivo (.ics) que puedes abrir directamente para añadir la cita.
-    </p>
   `;
 }
 
-// --- Calendario: enlace de Google Calendar + archivo .ics adjunto -------
-// Cubre los tres casos habituales: Google (enlace de un clic), y Apple
-// Calendar/Outlook/el resto (abriendo el adjunto .ics del propio correo).
-
-function base64Encode(input: string): string {
-  const bytes = new TextEncoder().encode(input);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
 // Las citas se guardan en hora local de Europe/Madrid; hay que convertirlas a
-// UTC (con el cambio de horario de verano/invierno ya aplicado) para que los
-// enlaces/archivos de calendario funcionen igual en cualquier zona horaria.
+// UTC (con el cambio de horario de verano/invierno ya aplicado) para que el
+// enlace de Google Calendar apunte a la hora correcta sin importar la zona
+// horaria del cliente.
 function madridOffsetMinutes(instant: Date): number {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "Europe/Madrid",
@@ -183,48 +174,22 @@ function toIcsUtcString(date: Date): string {
   return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 }
 
-function escapeIcsText(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
-}
-
-function buildCalendarEvent(params: {
-  appointmentId: string;
+function googleCalendarUrl(params: {
   serviceName: string;
   date: string;
   startTime: string;
   endTime: string;
-}): { googleCalendarUrl: string; icsContent: string } {
-  const startUtc = madridLocalToUtcDate(params.date, params.startTime);
-  const endUtc = madridLocalToUtcDate(params.date, params.endTime);
-  const startIcs = toIcsUtcString(startUtc);
-  const endIcs = toIcsUtcString(endUtc);
+}): string {
+  const startIcs = toIcsUtcString(madridLocalToUtcDate(params.date, params.startTime));
+  const endIcs = toIcsUtcString(madridLocalToUtcDate(params.date, params.endTime));
   const title = `Nicolenails: ${params.serviceName}`;
-  const description = "Cita reservada en Nicolenails.";
 
-  const googleCalendarUrl =
+  return (
     "https://calendar.google.com/calendar/render?action=TEMPLATE" +
     `&text=${encodeURIComponent(title)}` +
     `&dates=${startIcs}/${endIcs}` +
-    `&details=${encodeURIComponent(description)}`;
-
-  const icsContent = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Nicolenails//Appointments//ES",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    `UID:${params.appointmentId}@nicolenails`,
-    `DTSTAMP:${toIcsUtcString(new Date())}`,
-    `DTSTART:${startIcs}`,
-    `DTEND:${endIcs}`,
-    `SUMMARY:${escapeIcsText(title)}`,
-    `DESCRIPTION:${escapeIcsText(description)}`,
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ].join("\r\n");
-
-  return { googleCalendarUrl, icsContent };
+    `&details=${encodeURIComponent("Cita reservada en Nicolenails.")}`
+  );
 }
 
 function subjectAndBody(
@@ -237,12 +202,7 @@ function subjectAndBody(
     endTime: string;
     appointmentId: string;
   }
-): {
-  subject: string;
-  text: string;
-  html?: string;
-  icsAttachment?: { filename: string; content: string };
-} {
+): { subject: string; text: string; html?: string } {
   const when = `${data.date} a las ${data.time.slice(0, 5)}`;
   const name = escapeHtml(data.customerName);
   const details = appointmentDetailsHtml(data.serviceName, when);
@@ -267,31 +227,36 @@ function subjectAndBody(
         `),
       };
     case "accepted": {
-      const { googleCalendarUrl, icsContent } = buildCalendarEvent({
-        appointmentId: data.appointmentId,
+      const googleUrl = googleCalendarUrl({
         serviceName: data.serviceName,
         date: data.date,
         startTime: data.time,
         endTime: data.endTime,
       });
+      // El .ics se sirve desde la propia web (no como adjunto del correo):
+      // así, al pulsar el enlace, el navegador/OS lo abre directamente en la
+      // app de calendario del cliente en un solo toque (Apple Calendar,
+      // Outlook, etc.), en vez de tener que abrir un adjunto a mano. Igual
+      // que el enlace de cancelar, solo se incluye si sabemos SITE_URL.
+      const icsUrl = SITE_URL ? `${SITE_URL}/cita/${data.appointmentId}/ics` : null;
 
       return {
         subject: "Tu cita ha sido confirmada — Nicolenails",
-        text: `Hola ${data.customerName},\n\n¡Tu cita para "${data.serviceName}" el ${when} ha sido confirmada!\n\nAñádela a tu calendario (Google): ${googleCalendarUrl}\n(Si usas Apple Calendar u Outlook, abre el archivo .ics adjunto a este correo.)${
-          cancelUrl ? `\n\nSi no puedes venir, cancela aquí: ${cancelUrl}` : ""
-        }\n\nTe esperamos,\nNicolenails`,
+        text: `Hola ${data.customerName},\n\n¡Tu cita para "${data.serviceName}" el ${when} ha sido confirmada!\n\nAñádela a tu calendario:\n- Google Calendar: ${googleUrl}${
+          icsUrl ? `\n- Apple Calendar / Outlook: ${icsUrl}` : ""
+        }${cancelUrl ? `\n\nSi no puedes venir, cancela aquí: ${cancelUrl}` : ""}\n\nTe esperamos,\nNicolenails`,
         html: emailShell(`
           <p>Hola ${name},</p>
           <p>¡Tu cita ha sido confirmada!</p>
           ${details}
-          ${googleCalendarButtonHtml(googleCalendarUrl)}
+          <p style="margin: 20px 0 2px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: ${COLOR_INK}; text-transform: uppercase; letter-spacing: 0.5px;">
+            Añadir a tu calendario
+          </p>
+          ${calendarButtonHtml(googleUrl, "Google Calendar")}
+          ${icsUrl ? calendarButtonHtml(icsUrl, "Apple Calendar / Outlook") : ""}
           ${cancelUrl ? cancelButtonHtml(cancelUrl) : ""}
           <p style="margin-top: 24px;">Te esperamos,<br />Nicolenails</p>
         `),
-        icsAttachment: {
-          filename: "cita-nicolenails.ics",
-          content: base64Encode(icsContent),
-        },
       };
     }
     case "rejected":
@@ -321,13 +286,7 @@ function subjectAndBody(
   }
 }
 
-async function sendEmail(
-  to: string,
-  subject: string,
-  text: string,
-  html?: string,
-  attachments?: { filename: string; content: string }[]
-) {
+async function sendEmail(to: string, subject: string, text: string, html?: string) {
   if (!RESEND_API_KEY) {
     console.warn(
       "RESEND_API_KEY no configurada: se omite el envío de email. Ver README.md."
@@ -341,14 +300,7 @@ async function sendEmail(
       Authorization: `Bearer ${RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      from: RESEND_FROM,
-      to,
-      subject,
-      text,
-      ...(html ? { html } : {}),
-      ...(attachments && attachments.length ? { attachments } : {}),
-    }),
+    body: JSON.stringify({ from: RESEND_FROM, to, subject, text, ...(html ? { html } : {}) }),
   });
 
   if (!response.ok) {
@@ -388,7 +340,7 @@ Deno.serve(async (req) => {
     return new Response("missing related data", { status: 200 });
   }
 
-  const { subject, text, html, icsAttachment } = subjectAndBody(event, {
+  const { subject, text, html } = subjectAndBody(event, {
     customerName: customer.name,
     serviceName: service.name,
     date: record.date,
@@ -397,7 +349,7 @@ Deno.serve(async (req) => {
     appointmentId: record.id,
   });
 
-  await sendEmail(customer.email, subject, text, html, icsAttachment ? [icsAttachment] : undefined);
+  await sendEmail(customer.email, subject, text, html);
 
   return new Response("ok", { status: 200 });
 });

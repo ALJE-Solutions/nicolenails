@@ -4,8 +4,9 @@ Esta Edge Function envía un correo al cliente cuando:
 
 - se crea una solicitud de cita (`INSERT` en `appointments`),
 - el propietario la acepta (`status` → `accepted`) — este correo incluye
-  además un botón "Añadir a Google Calendar" y un archivo `.ics` adjunto
-  (para Apple Calendar, Outlook, etc.),
+  además dos botones para añadir la cita al calendario: "Google Calendar"
+  (enlace directo) y "Apple Calendar / Outlook" (enlace a un archivo `.ics`
+  servido desde la propia web, `/cita/<id>/ics`),
 - el propietario la rechaza (`status` → `rejected`),
 - se cancela (`status` → `cancelled`), tanto si cancela el propietario desde
   el panel como si cancela el propio cliente desde el enlace del email.
@@ -27,10 +28,10 @@ quieras activar los correos.
 supabase functions deploy send-appointment-email
 ```
 
-El botón "Cancelar cita" del correo depende de las funciones SQL de
-`supabase/migrations/008_cancel_appointment.sql`; asegúrate de que esa
-migración esté aplicada en el proyecto de Supabase (igual que el resto de
-migraciones de `supabase/migrations`).
+El botón "Cancelar cita" depende de `supabase/migrations/008_cancel_appointment.sql`,
+y los botones de calendario de `supabase/migrations/009_appointment_ics.sql`;
+asegúrate de que ambas migraciones estén aplicadas en el proyecto de Supabase
+(igual que el resto de migraciones de `supabase/migrations`).
 
 ## 3. Configurar los secretos (nunca en el repositorio)
 
@@ -44,9 +45,10 @@ supabase secrets set SITE_URL=https://tu-dominio-o-proyecto.vercel.app
 puede dejarse el remitente de pruebas por defecto.
 
 `SITE_URL` es la URL pública de la web desplegada (sin barra final). Se usa
-para construir el botón "Cancelar cita" del email de confirmación
-(`/cancelar/<id>`); si no se configura, el email se envía igual pero sin ese
-botón.
+para construir el botón "Cancelar cita" (`/cancelar/<id>`) y el de "Apple
+Calendar / Outlook" (`/cita/<id>/ics`); si no se configura, el email se envía
+igual pero sin esos botones (el de "Google Calendar" no depende de `SITE_URL`
+y siempre aparece).
 
 ## 4. Crear el Database Webhook
 

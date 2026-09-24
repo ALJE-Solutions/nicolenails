@@ -175,6 +175,16 @@ export type Database = {
         Args: { p_appointment_id: string };
         Returns: void;
       };
+      get_appointment_for_ics: {
+        Args: { p_appointment_id: string };
+        Returns: {
+          service_name: string;
+          date: string;
+          start_time: string;
+          end_time: string;
+          status: AppointmentStatus;
+        }[];
+      };
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;
