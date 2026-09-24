@@ -49,6 +49,17 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
+function cancelButtonHtml(cancelUrl: string): string {
+  return `
+    <p style="margin: 28px 0;">
+      <a href="${cancelUrl}" style="display: inline-block; padding: 12px 24px; background: #1a1a1a; color: #d4af37; text-decoration: none; border-radius: 999px; font-weight: 600;">
+        Cancelar cita
+      </a>
+    </p>
+    <p style="color: #666; font-size: 14px;">Si no puedes venir, usa el botón de arriba para liberar el hueco.</p>
+  `;
+}
+
 function subjectAndBody(
   event: "created" | "accepted" | "rejected",
   data: { customerName: string; serviceName: string; date: string; time: string; appointmentId: string }
@@ -62,7 +73,18 @@ function subjectAndBody(
     case "created":
       return {
         subject: "Hemos recibido tu solicitud — Nicolenails",
-        text: `Hola ${data.customerName},\n\nHemos recibido tu solicitud de cita para "${data.serviceName}" el ${when}.\nEstá pendiente de confirmación por parte de Nicolenails; te avisaremos en cuanto la revisemos.\n\nGracias,\nNicolenails`,
+        text: `Hola ${data.customerName},\n\nHemos recibido tu solicitud de cita para "${data.serviceName}" el ${when}.\nEstá pendiente de confirmación por parte de Nicolenails; te avisaremos en cuanto la revisemos.${
+          cancelUrl ? `\n\nSi ya no la necesitas, puedes cancelarla aquí: ${cancelUrl}` : ""
+        }\n\nGracias,\nNicolenails`,
+        html: `
+          <div style="font-family: sans-serif; color: #1a1a1a; line-height: 1.5;">
+            <p>Hola ${escapeHtml(data.customerName)},</p>
+            <p>Hemos recibido tu solicitud de cita para <strong>${escapeHtml(data.serviceName)}</strong> el ${escapeHtml(when)}.</p>
+            <p>Está pendiente de confirmación por parte de Nicolenails; te avisaremos en cuanto la revisemos.</p>
+            ${cancelUrl ? cancelButtonHtml(cancelUrl) : ""}
+            <p>Gracias,<br />Nicolenails</p>
+          </div>
+        `,
       };
     case "accepted":
       return {
@@ -74,16 +96,7 @@ function subjectAndBody(
           <div style="font-family: sans-serif; color: #1a1a1a; line-height: 1.5;">
             <p>Hola ${escapeHtml(data.customerName)},</p>
             <p>¡Tu cita para <strong>${escapeHtml(data.serviceName)}</strong> el ${escapeHtml(when)} ha sido confirmada!</p>
-            ${
-              cancelUrl
-                ? `<p style="margin: 28px 0;">
-                     <a href="${cancelUrl}" style="display: inline-block; padding: 12px 24px; background: #1a1a1a; color: #d4af37; text-decoration: none; border-radius: 999px; font-weight: 600;">
-                       Cancelar cita
-                     </a>
-                   </p>
-                   <p style="color: #666; font-size: 14px;">Si no puedes venir, usa el botón de arriba para liberar el hueco.</p>`
-                : ""
-            }
+            ${cancelUrl ? cancelButtonHtml(cancelUrl) : ""}
             <p>Te esperamos,<br />Nicolenails</p>
           </div>
         `,

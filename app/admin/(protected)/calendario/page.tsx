@@ -29,8 +29,15 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
   const rangeEnd = grid[grid.length - 1].iso;
   const appointments = await getAppointmentsInRange(rangeStart, rangeEnd);
 
+  // La cuadrícula solo muestra citas activas: una cancelada o rechazada ya no
+  // ocupa ese hueco, y dejarla ahí confundía con una cita real (el resumen de
+  // abajo sigue contando todos los estados, incluidos esos, para el histórico).
+  const activeAppointments = appointments.filter(
+    (appointment) => appointment.status !== "cancelled" && appointment.status !== "rejected"
+  );
+
   const appointmentsByDate = new Map<string, typeof appointments>();
-  for (const appointment of appointments) {
+  for (const appointment of activeAppointments) {
     const list = appointmentsByDate.get(appointment.date) ?? [];
     list.push(appointment);
     appointmentsByDate.set(appointment.date, list);
