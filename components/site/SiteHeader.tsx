@@ -9,15 +9,6 @@ export function SiteHeader() {
           Nicole<span className="text-gold">nails</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-cream/70 sm:flex">
-          <Link href="/" className="transition-colors hover:text-cream">
-            Inicio
-          </Link>
-          <Link href="/servicios" className="transition-colors hover:text-cream">
-            Servicios
-          </Link>
-        </nav>
-
         <Link href="/reservar" className={buttonClasses("primary", "md")}>
           Reservar cita
         </Link>

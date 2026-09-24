@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { buttonClasses } from "@/components/ui/Button";
-import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { ServiceCard } from "@/components/booking/ServiceCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getActiveServices } from "@/lib/services/queries";
@@ -12,29 +11,25 @@ export default async function HomePage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.2em] text-gold uppercase">
-              Salón de uñas
-            </p>
-            <h1 className="mt-4 font-display text-4xl leading-tight font-semibold text-cream sm:text-5xl">
-              Cuidado de uñas con un toque elegante y personal
-            </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-cream/60">
-              Reserva tu cita en Nicolenails en pocos pasos: elige tu servicio,
-              el día y la hora que mejor te vengan.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/reservar" className={buttonClasses("primary", "lg")}>
-                Reservar cita
-              </Link>
-              <Link href="/servicios" className={buttonClasses("secondary", "lg")}>
-                Ver servicios
-              </Link>
-            </div>
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold tracking-[0.2em] text-gold uppercase">
+            Salón de uñas
+          </p>
+          <h1 className="mt-4 font-display text-4xl leading-tight font-semibold text-cream sm:text-5xl">
+            Cuidado de uñas con un toque elegante y personal
+          </h1>
+          <p className="mt-5 max-w-md text-base leading-relaxed text-cream/60">
+            Reserva tu cita en Nicolenails en pocos pasos: elige tu servicio,
+            el día y la hora que mejor te vengan.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href="/reservar" className={buttonClasses("primary", "lg")}>
+              Reservar cita
+            </Link>
+            <Link href="/servicios" className={buttonClasses("secondary", "lg")}>
+              Ver servicios
+            </Link>
           </div>
-
-          <ImagePlaceholder label="Fotografía del salón próximamente" aspect="video" />
         </div>
       </section>
 

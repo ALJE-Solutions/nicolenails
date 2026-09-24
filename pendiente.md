@@ -1,6 +1,6 @@
 # Nicolenails — estado del proyecto y pendientes
 
-Última actualización: 2026-09-21. Este documento resume qué está hecho y qué queda, para retomarlo sin tener que releer todo el historial de cambios.
+Última actualización: 2026-09-24. Este documento resume qué está hecho y qué queda, para retomarlo sin tener que releer todo el historial de cambios.
 
 ## Estado actual (hecho)
 
@@ -12,25 +12,19 @@
 - **Cuenta de administración de Nicole**: creada en Supabase Auth y dada de alta en `admins`. Ya puede entrar en `/admin/login`.
 - **Diseño**: tema negro con dorado como acento (fondo negro en toda la web y el panel, dorado reservado para CTAs y detalles).
 - **Datos reales cargados** (`supabase/seed.sql`): los servicios y precios reales del negocio, Nicole como personal, y el horario (L-V 10:00-13:00 y 15:30-18:30, sábados 10:00-13:00, domingo cerrado).
+- **Dominio propio**: `nicolenails.es`, comprado en IONOS y configurado en Vercel.
+- **Emails de citas (Resend)**: activo en producción — solicitud recibida, confirmada (con botones de cancelar y de añadir al calendario), rechazada y cancelada. Cuenta y dominio de Resend definitivos configurados (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`), y `SITE_URL` ya apunta a `nicolenails.es` — falta solo la prueba real con un email cualquiera (ver pendientes).
+- **Cancelación por el cliente**: desde el enlace del email, sin necesitar cuenta (`/cancelar/[id]`); probado y funcionando.
 
 ## Pendiente — configuración externa (bloqueante)
 
-- **Emails de confirmación (Resend)**: activado — cuenta creada, secretos `RESEND_API_KEY` y `SITE_URL` configurados, función `send-appointment-email` desplegada y Database Webhook creado sobre `appointments` (INSERT/UPDATE).
-  - **Limitación actual (modo de pruebas de Resend)**: sin dominio verificado, Resend solo permite enviar a la dirección con la que se creó la cuenta (`andcodeinfo@gmail.com`). Cualquier otro destinatario da error 403 (`validation_error`). Para las pruebas, reservar usando esa dirección como email del cliente.
-  - **Pendiente para producción real**: cuando el negocio tenga una cuenta/dominio propio de verdad, verificar un dominio en [resend.com/domains](https://resend.com/domains) (es gratis, solo requiere tener un dominio y añadir registros DNS) y actualizar el secreto `RESEND_FROM_EMAIL` para usarlo (p. ej. `Nicolenails <reservas@nicolenails.com>`). Sin esto, **ningún cliente real recibirá los correos**, solo llegan a la dirección de prueba. Relacionado con el punto "Dominio propio" de abajo — si se compra un dominio, sirve para la web (Vercel) y para esto a la vez.
-
+- **Probar el envío real** con la cuenta de Resend definitiva, el dominio verificado y `SITE_URL` ya actualizado: reservar con un email cualquiera (ya no solo `andcodeinfo@gmail.com`) y confirmar que llega correctamente desde el remitente elegido, con los enlaces de cancelar/calendario apuntando a `nicolenails.es`.
 
 ## Pendiente — funcionalidades / mejoras (sin empezar)
 
-- **Pruebas manuales end-to-end en navegador**: reservar una cita real, aceptarla/rechazarla desde el panel, comprobar el calendario y los estados. Solo se ha verificado que las rutas cargan (código 200), no el flujo completo de UI.
+- **Subir y desplegar el último cambio de los botones de calendario**: el email de "cita confirmada" ahora enlaza a `/cita/[id]/ics` (`app/(site)/cita/[id]/ics/route.ts`) en vez de llevar el archivo `.ics` como adjunto, para que se abra con un solo toque en Apple Calendar/Outlook. Hace falta: `git push`, aplicar `supabase/migrations/009_appointment_ics.sql` en el SQL Editor, y redesplegar `send-appointment-email`.
 - **Protección anti-spam en el formulario público de reserva**: no hay captcha ni límite de peticiones; cualquiera puede crear citas "pending" repetidamente.
-- **Cancelación por parte del cliente**: ya implementada — página pública `/cancelar/[id]` (`app/(site)/cancelar/[id]/`) y funciones SQL `get_appointment_for_cancellation`/`cancel_appointment` (`supabase/migrations/008_cancel_appointment.sql`). Tanto el email de "solicitud recibida" como el de "cita confirmada" (Resend) incluyen el botón "Cancelar cita", usando el secreto `SITE_URL` (ver README de la función). El cliente sigue sin poder modificar la cita, solo cancelarla. Probado en producción (funciona), pendiente de subir el último ajuste (botón también en el email de solicitud).
-- **Email al cancelar una cita aceptada**: cuando una cita pasa a `cancelled` (tanto si la cancela Nicole desde `/admin/citas` como si la cancela el cliente desde el enlace del email), ahora se envía un correo de "Tu cita ha sido cancelada" (`supabase/functions/send-appointment-email/index.ts`). Sin subir/desplegar todavía.
-- **Calendario**: `/admin/calendario` ya no muestra en la cuadrícula del día las citas `cancelled`/`rejected` (antes se veían igual que una cita activa, confundiendo). El resumen mensual sigue contando todos los estados. Sin subir todavía.
-- **Añadir la cita al calendario del cliente**: el email de "cita confirmada" incluye dos botones — "Google Calendar" (enlace directo) y "Apple Calendar / Outlook" (enlace a `/cita/[id]/ics`, `app/(site)/cita/[id]/ics/route.ts`, que sirve el archivo `.ics` al vuelo desde la web en vez de ir como adjunto del correo, para que se abra en un solo toque). Usa la función SQL `get_appointment_for_ics` (`supabase/migrations/009_appointment_ics.sql`) y calcula la hora en UTC a partir de la hora local de Europe/Madrid (con cambio de horario de verano/invierno, `lib/calendar/ics.ts`). Solo en el email de confirmación (`accepted`), no en el de solicitud pendiente. Sin subir/desplegar todavía (necesita también aplicar la migración 009).
-- **Emails más cuidados**: las plantillas de correo (`supabase/functions/send-appointment-email/index.ts`) ahora tienen cabecera, tarjeta con los datos de la cita y colores de marca, en vez de texto plano. Sin subir/desplegar todavía.
 - **Sin tests automatizados** (unitarios ni end-to-end).
-- **Dominio propio**: confirmar si Vercel ya tiene un dominio personalizado apuntando o sigue en el `*.vercel.app` por defecto.
 
 ## Notas técnicas a tener en cuenta
 
@@ -38,6 +32,8 @@
 - **Horario partido**: `business_hours` ya no tiene una fila única por día — cada fila es un tramo suelto (mañana, tarde, etc.), y un día sin filas está cerrado. El panel (`/admin/horarios`) permite añadir/quitar tramos por día.
 - Hay una captura de pantalla (`WhatsApp Image 2026-09-15 at 12.18.45.jpeg`) en la raíz del repo que se usó para sacar los precios reales — no hace falta mantenerla en el repo, se puede borrar o mover fuera antes de subir cambios.
 
-nicolecanto3@gmail.com
-Nicolecanto3.
-claves resend y admin supabase
+## Accesos y credenciales
+
+⚠️ Esto queda en texto plano a propósito porque el repositorio es privado, pero tenlo en cuenta si alguna vez se hace público o se comparte: la misma contraseña se reutiliza para varias cuentas.
+
+- **Email/contraseña de Nicole** (login en `/admin/login`, cuenta de Resend y cuenta de Supabase): `nicolecanto3@gmail.com` / `Nicolecanto3.`
