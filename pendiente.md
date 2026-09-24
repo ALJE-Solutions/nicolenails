@@ -15,20 +15,16 @@
 
 ## Pendiente — configuración externa (bloqueante)
 
-Nada de esto requiere código, pero sin hacerlo la app no funciona del todo:
+- **Emails de confirmación (Resend)**: activado — cuenta creada, secretos `RESEND_API_KEY` y `SITE_URL` configurados, función `send-appointment-email` desplegada y Database Webhook creado sobre `appointments` (INSERT/UPDATE).
+  - **Limitación actual (modo de pruebas de Resend)**: sin dominio verificado, Resend solo permite enviar a la dirección con la que se creó la cuenta (`andcodeinfo@gmail.com`). Cualquier otro destinatario da error 403 (`validation_error`). Para las pruebas, reservar usando esa dirección como email del cliente.
+  - **Pendiente para producción real**: cuando el negocio tenga una cuenta/dominio propio de verdad, verificar un dominio en [resend.com/domains](https://resend.com/domains) (es gratis, solo requiere tener un dominio y añadir registros DNS) y actualizar el secreto `RESEND_FROM_EMAIL` para usarlo (p. ej. `Nicolenails <reservas@nicolenails.com>`). Sin esto, **ningún cliente real recibirá los correos**, solo llegan a la dirección de prueba. Relacionado con el punto "Dominio propio" de abajo — si se compra un dominio, sirve para la web (Vercel) y para esto a la vez.
 
-1. **Emails de confirmación (Resend)** — sigue sin activar, es opcional pero recomendable:
-   - Instrucciones detalladas en `supabase/functions/send-appointment-email/README.md`.
-   - Dar de alta una cuenta en Resend, desplegar la función (`supabase functions deploy send-appointment-email`), configurar `RESEND_API_KEY` (y opcionalmente `RESEND_FROM_EMAIL`) como secreto, y crear el Database Webhook en Supabase sobre `appointments` (INSERT/UPDATE).
-   - Para probar el flujo de reserva de principio a fin, usar `andcodeinfo@gmail.com` como email del cliente al reservar.
-2. **Variables de entorno en Vercel**: confirmar que el proyecto desplegado tiene `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` configuradas (las mismas de `.env.local`, que no se sube al repo).
-3. **Foto del salón**: la home (`/`) tiene un `ImagePlaceholder` a la espera de una foto real — sustituir cuando Nicole tenga una.
 
 ## Pendiente — funcionalidades / mejoras (sin empezar)
 
 - **Pruebas manuales end-to-end en navegador**: reservar una cita real, aceptarla/rechazarla desde el panel, comprobar el calendario y los estados. Solo se ha verificado que las rutas cargan (código 200), no el flujo completo de UI.
 - **Protección anti-spam en el formulario público de reserva**: no hay captcha ni límite de peticiones; cualquiera puede crear citas "pending" repetidamente.
-- **El cliente no puede cancelar ni modificar su propia cita** una vez enviada — solo Nicole desde el panel. Podría interesar un enlace de cancelación en el email de confirmación (cuando Resend esté activo).
+- **Cancelación por parte del cliente**: ya implementada — página pública `/cancelar/[id]` (`app/(site)/cancelar/[id]/`) y funciones SQL `get_appointment_for_cancellation`/`cancel_appointment` (`supabase/migrations/008_cancel_appointment.sql`). El email de "cita confirmada" (Resend) incluye un botón "Cancelar cita" que enlaza ahí, usando el secreto `SITE_URL` (ver README de la función). El cliente sigue sin poder modificar la cita, solo cancelarla.
 - **Sin tests automatizados** (unitarios ni end-to-end).
 - **Dominio propio**: confirmar si Vercel ya tiene un dominio personalizado apuntando o sigue en el `*.vercel.app` por defecto.
 
@@ -37,3 +33,6 @@ Nada de esto requiere código, pero sin hacerlo la app no funciona del todo:
 - **Concurrencia de citas**: antes había un `exclusion constraint` en Postgres que garantizaba al 100% que nunca hubiera dos citas solapadas. Al añadir soporte multi-personal, esa garantía dura pasó a ser solo para una persona ya asignada (cita **aceptada**); mientras una cita está "pending" (sin persona asignada todavía), el control de solapamiento es a nivel de aplicación, no de base de datos. Con el volumen de un negocio pequeño el riesgo es mínimo, pero no es matemáticamente imposible como antes. Ver comentarios en `supabase/migrations/004_staff.sql`.
 - **Horario partido**: `business_hours` ya no tiene una fila única por día — cada fila es un tramo suelto (mañana, tarde, etc.), y un día sin filas está cerrado. El panel (`/admin/horarios`) permite añadir/quitar tramos por día.
 - Hay una captura de pantalla (`WhatsApp Image 2026-09-15 at 12.18.45.jpeg`) en la raíz del repo que se usó para sacar los precios reales — no hace falta mantenerla en el repo, se puede borrar o mover fuera antes de subir cambios.
+nicolecanto3@gmail.com
+Nicolecanto3.
+claves resend y admin supabase

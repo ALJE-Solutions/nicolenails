@@ -162,6 +162,19 @@ export type Database = {
         };
         Returns: { appointment_id: string; status: AppointmentStatus }[];
       };
+      get_appointment_for_cancellation: {
+        Args: { p_appointment_id: string };
+        Returns: {
+          service_name: string;
+          date: string;
+          start_time: string;
+          status: AppointmentStatus;
+        }[];
+      };
+      cancel_appointment: {
+        Args: { p_appointment_id: string };
+        Returns: void;
+      };
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;

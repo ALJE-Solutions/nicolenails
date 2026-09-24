@@ -23,15 +23,26 @@ quieras activar los correos.
 supabase functions deploy send-appointment-email
 ```
 
+El botón "Cancelar cita" del correo depende de las funciones SQL de
+`supabase/migrations/008_cancel_appointment.sql`; asegúrate de que esa
+migración esté aplicada en el proyecto de Supabase (igual que el resto de
+migraciones de `supabase/migrations`).
+
 ## 3. Configurar los secretos (nunca en el repositorio)
 
 ```bash
 supabase secrets set RESEND_API_KEY=tu_clave_de_resend
 supabase secrets set RESEND_FROM_EMAIL="Nicolenails <reservas@tudominio.com>"
+supabase secrets set SITE_URL=https://tu-dominio-o-proyecto.vercel.app
 ```
 
 `RESEND_FROM_EMAIL` es opcional; sin verificar un dominio propio en Resend,
 puede dejarse el remitente de pruebas por defecto.
+
+`SITE_URL` es la URL pública de la web desplegada (sin barra final). Se usa
+para construir el botón "Cancelar cita" del email de confirmación
+(`/cancelar/<id>`); si no se configura, el email se envía igual pero sin ese
+botón.
 
 ## 4. Crear el Database Webhook
 

@@ -31,6 +31,18 @@ interface WebhookPayload {
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_FROM = Deno.env.get("RESEND_FROM_EMAIL") ?? "Nicolenails <onboarding@resend.dev>";
+// URL pública de la web desplegada, para construir el enlace de cancelación
+// que se incluye en el email de confirmación (ver README.md de esta carpeta).
+const SITE_URL = Deno.env.get("SITE_URL");
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -39,9 +51,12 @@ const supabaseAdmin = createClient(
 
 function subjectAndBody(
   event: "created" | "accepted" | "rejected",
-  data: { customerName: string; serviceName: string; date: string; time: string }
-) {
+  data: { customerName: string; serviceName: string; date: string; time: string; appointmentId: string }
+): { subject: string; text: string; html?: string } {
   const when = `${data.date} a las ${data.time.slice(0, 5)}`;
+  // El botón de cancelar solo se incluye si sabemos la URL pública de la web
+  // (secreto SITE_URL); sin ella se envía el correo igual, sin el enlace.
+  const cancelUrl = SITE_URL ? `${SITE_URL}/cancelar/${data.appointmentId}` : null;
 
   switch (event) {
     case "created":
@@ -52,7 +67,26 @@ function subjectAndBody(
     case "accepted":
       return {
         subject: "Tu cita ha sido confirmada — Nicolenails",
-        text: `Hola ${data.customerName},\n\n¡Tu cita para "${data.serviceName}" el ${when} ha sido confirmada!\n\nTe esperamos,\nNicolenails`,
+        text: `Hola ${data.customerName},\n\n¡Tu cita para "${data.serviceName}" el ${when} ha sido confirmada!${
+          cancelUrl ? `\n\nSi no puedes venir, cancela aquí: ${cancelUrl}` : ""
+        }\n\nTe esperamos,\nNicolenails`,
+        html: `
+          <div style="font-family: sans-serif; color: #1a1a1a; line-height: 1.5;">
+            <p>Hola ${escapeHtml(data.customerName)},</p>
+            <p>¡Tu cita para <strong>${escapeHtml(data.serviceName)}</strong> el ${escapeHtml(when)} ha sido confirmada!</p>
+            ${
+              cancelUrl
+                ? `<p style="margin: 28px 0;">
+                     <a href="${cancelUrl}" style="display: inline-block; padding: 12px 24px; background: #1a1a1a; color: #d4af37; text-decoration: none; border-radius: 999px; font-weight: 600;">
+                       Cancelar cita
+                     </a>
+                   </p>
+                   <p style="color: #666; font-size: 14px;">Si no puedes venir, usa el botón de arriba para liberar el hueco.</p>`
+                : ""
+            }
+            <p>Te esperamos,<br />Nicolenails</p>
+          </div>
+        `,
       };
     case "rejected":
       return {
@@ -62,7 +96,7 @@ function subjectAndBody(
   }
 }
 
-async function sendEmail(to: string, subject: string, text: string) {
+async function sendEmail(to: string, subject: string, text: string, html?: string) {
   if (!RESEND_API_KEY) {
     console.warn(
       "RESEND_API_KEY no configurada: se omite el envío de email. Ver README.md."
@@ -76,7 +110,7 @@ async function sendEmail(to: string, subject: string, text: string) {
       Authorization: `Bearer ${RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ from: RESEND_FROM, to, subject, text }),
+    body: JSON.stringify({ from: RESEND_FROM, to, subject, text, ...(html ? { html } : {}) }),
   });
 
   if (!response.ok) {
@@ -115,14 +149,15 @@ Deno.serve(async (req) => {
     return new Response("missing related data", { status: 200 });
   }
 
-  const { subject, text } = subjectAndBody(event, {
+  const { subject, text, html } = subjectAndBody(event, {
     customerName: customer.name,
     serviceName: service.name,
     date: record.date,
     time: record.start_time,
+    appointmentId: record.id,
   });
 
-  await sendEmail(customer.email, subject, text);
+  await sendEmail(customer.email, subject, text, html);
 
   return new Response("ok", { status: 200 });
 });
