@@ -3,8 +3,12 @@
 Esta Edge Function envía un correo al cliente cuando:
 
 - se crea una solicitud de cita (`INSERT` en `appointments`),
-- el propietario la acepta (`status` → `accepted`),
-- el propietario la rechaza (`status` → `rejected`).
+- el propietario la acepta (`status` → `accepted`) — este correo incluye
+  además un botón "Añadir a Google Calendar" y un archivo `.ics` adjunto
+  (para Apple Calendar, Outlook, etc.),
+- el propietario la rechaza (`status` → `rejected`),
+- se cancela (`status` → `cancelled`), tanto si cancela el propietario desde
+  el panel como si cancela el propio cliente desde el enlace del email.
 
 El resto de la aplicación (crear y gestionar citas) **funciona igual sin esta
 pieza**; simplemente no se enviarán los correos hasta que se complete esta

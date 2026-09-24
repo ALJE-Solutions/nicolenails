@@ -27,6 +27,8 @@
 - **Cancelación por parte del cliente**: ya implementada — página pública `/cancelar/[id]` (`app/(site)/cancelar/[id]/`) y funciones SQL `get_appointment_for_cancellation`/`cancel_appointment` (`supabase/migrations/008_cancel_appointment.sql`). Tanto el email de "solicitud recibida" como el de "cita confirmada" (Resend) incluyen el botón "Cancelar cita", usando el secreto `SITE_URL` (ver README de la función). El cliente sigue sin poder modificar la cita, solo cancelarla. Probado en producción (funciona), pendiente de subir el último ajuste (botón también en el email de solicitud).
 - **Email al cancelar una cita aceptada**: cuando una cita pasa a `cancelled` (tanto si la cancela Nicole desde `/admin/citas` como si la cancela el cliente desde el enlace del email), ahora se envía un correo de "Tu cita ha sido cancelada" (`supabase/functions/send-appointment-email/index.ts`). Sin subir/desplegar todavía.
 - **Calendario**: `/admin/calendario` ya no muestra en la cuadrícula del día las citas `cancelled`/`rejected` (antes se veían igual que una cita activa, confundiendo). El resumen mensual sigue contando todos los estados. Sin subir todavía.
+- **Añadir la cita al calendario del cliente**: el email de "cita confirmada" ahora incluye un botón "Añadir a Google Calendar" y lleva adjunto un archivo `.ics` (para Apple Calendar, Outlook, etc.), calculando la hora en UTC a partir de la hora local de Europe/Madrid (con cambio de horario de verano/invierno). Solo en el email de confirmación (`accepted`), no en el de solicitud pendiente. Sin subir/desplegar todavía.
+- **Emails más cuidados**: las plantillas de correo (`supabase/functions/send-appointment-email/index.ts`) ahora tienen cabecera, tarjeta con los datos de la cita y colores de marca, en vez de texto plano. Sin subir/desplegar todavía.
 - **Sin tests automatizados** (unitarios ni end-to-end).
 - **Dominio propio**: confirmar si Vercel ya tiene un dominio personalizado apuntando o sigue en el `*.vercel.app` por defecto.
 
@@ -35,6 +37,7 @@
 - **Concurrencia de citas**: antes había un `exclusion constraint` en Postgres que garantizaba al 100% que nunca hubiera dos citas solapadas. Al añadir soporte multi-personal, esa garantía dura pasó a ser solo para una persona ya asignada (cita **aceptada**); mientras una cita está "pending" (sin persona asignada todavía), el control de solapamiento es a nivel de aplicación, no de base de datos. Con el volumen de un negocio pequeño el riesgo es mínimo, pero no es matemáticamente imposible como antes. Ver comentarios en `supabase/migrations/004_staff.sql`.
 - **Horario partido**: `business_hours` ya no tiene una fila única por día — cada fila es un tramo suelto (mañana, tarde, etc.), y un día sin filas está cerrado. El panel (`/admin/horarios`) permite añadir/quitar tramos por día.
 - Hay una captura de pantalla (`WhatsApp Image 2026-09-15 at 12.18.45.jpeg`) en la raíz del repo que se usó para sacar los precios reales — no hace falta mantenerla en el repo, se puede borrar o mover fuera antes de subir cambios.
+
 nicolecanto3@gmail.com
 Nicolecanto3.
 claves resend y admin supabase
