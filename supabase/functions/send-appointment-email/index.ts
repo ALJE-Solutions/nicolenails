@@ -5,6 +5,9 @@
 //   - INSERT                          -> "solicitud recibida"
 //   - UPDATE a status = 'accepted'    -> "cita confirmada"
 //   - UPDATE a status = 'rejected'    -> "cita rechazada"
+//   - UPDATE a status = 'cancelled'   -> "cita cancelada" (tanto si cancela
+//                                        Nicole desde el panel como si cancela
+//                                        el propio cliente desde el email)
 //
 // No requiere ninguna credencial para desplegarse, pero no enviará correos
 // reales hasta que se configure el secreto RESEND_API_KEY (ver README.md de
@@ -61,7 +64,7 @@ function cancelButtonHtml(cancelUrl: string): string {
 }
 
 function subjectAndBody(
-  event: "created" | "accepted" | "rejected",
+  event: "created" | "accepted" | "rejected" | "cancelled",
   data: { customerName: string; serviceName: string; date: string; time: string; appointmentId: string }
 ): { subject: string; text: string; html?: string } {
   const when = `${data.date} a las ${data.time.slice(0, 5)}`;
@@ -106,6 +109,11 @@ function subjectAndBody(
         subject: "Tu solicitud no ha podido confirmarse — Nicolenails",
         text: `Hola ${data.customerName},\n\nLo sentimos, no hemos podido confirmar tu solicitud para "${data.serviceName}" el ${when}. Contacta con nosotras para buscar otra fecha.\n\nNicolenails`,
       };
+    case "cancelled":
+      return {
+        subject: "Tu cita ha sido cancelada — Nicolenails",
+        text: `Hola ${data.customerName},\n\nTu cita para "${data.serviceName}" el ${when} ha sido cancelada. Si quieres reservar otra fecha, entra en nuestra web cuando quieras.\n\nNicolenails`,
+      };
   }
 }
 
@@ -144,10 +152,11 @@ Deno.serve(async (req) => {
   const statusChanged =
     payload.type === "UPDATE" && payload.old_record?.status !== record.status;
 
-  let event: "created" | "accepted" | "rejected" | null = null;
+  let event: "created" | "accepted" | "rejected" | "cancelled" | null = null;
   if (isNewRequest) event = "created";
   else if (statusChanged && record.status === "accepted") event = "accepted";
   else if (statusChanged && record.status === "rejected") event = "rejected";
+  else if (statusChanged && record.status === "cancelled") event = "cancelled";
 
   if (!event) {
     return new Response("no-op", { status: 200 });

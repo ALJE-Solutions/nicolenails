@@ -25,6 +25,8 @@
 - **Pruebas manuales end-to-end en navegador**: reservar una cita real, aceptarla/rechazarla desde el panel, comprobar el calendario y los estados. Solo se ha verificado que las rutas cargan (código 200), no el flujo completo de UI.
 - **Protección anti-spam en el formulario público de reserva**: no hay captcha ni límite de peticiones; cualquiera puede crear citas "pending" repetidamente.
 - **Cancelación por parte del cliente**: ya implementada — página pública `/cancelar/[id]` (`app/(site)/cancelar/[id]/`) y funciones SQL `get_appointment_for_cancellation`/`cancel_appointment` (`supabase/migrations/008_cancel_appointment.sql`). Tanto el email de "solicitud recibida" como el de "cita confirmada" (Resend) incluyen el botón "Cancelar cita", usando el secreto `SITE_URL` (ver README de la función). El cliente sigue sin poder modificar la cita, solo cancelarla. Probado en producción (funciona), pendiente de subir el último ajuste (botón también en el email de solicitud).
+- **Email al cancelar una cita aceptada**: cuando una cita pasa a `cancelled` (tanto si la cancela Nicole desde `/admin/citas` como si la cancela el cliente desde el enlace del email), ahora se envía un correo de "Tu cita ha sido cancelada" (`supabase/functions/send-appointment-email/index.ts`). Sin subir/desplegar todavía.
+- **Calendario**: `/admin/calendario` ya no muestra en la cuadrícula del día las citas `cancelled`/`rejected` (antes se veían igual que una cita activa, confundiendo). El resumen mensual sigue contando todos los estados. Sin subir todavía.
 - **Sin tests automatizados** (unitarios ni end-to-end).
 - **Dominio propio**: confirmar si Vercel ya tiene un dominio personalizado apuntando o sigue en el `*.vercel.app` por defecto.
 
