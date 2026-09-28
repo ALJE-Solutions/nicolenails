@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { StatusBadge } from "@/components/ui/Badge";
+import { CalendarGrid, type CalendarGridDay } from "@/components/admin/CalendarGrid";
 import { getAppointmentsInRange } from "@/lib/admin/queries";
 import { getMonthGrid, MONTH_LABEL, parseMonthParam, shiftMonthParam } from "@/lib/admin/calendar";
-import { formatTime } from "@/lib/format";
-import { cn } from "@/lib/cn";
 import type { AppointmentStatus } from "@/lib/types/database";
 
-const WEEKDAY_HEADERS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const STATUS_ORDER: AppointmentStatus[] = [
   "pending",
   "accepted",
@@ -43,6 +41,16 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
     appointmentsByDate.set(appointment.date, list);
   }
 
+  // Se pasa como array plano de datos serializables (nada de Date/Map) al
+  // componente cliente, que es quien abre el diálogo con el detalle del día.
+  const calendarDays: CalendarGridDay[] = grid.map((day) => ({
+    iso: day.iso,
+    dayLabel: format(day.date, "d"),
+    inCurrentMonth: day.inCurrentMonth,
+    isToday: day.isToday,
+    appointments: appointmentsByDate.get(day.iso) ?? [],
+  }));
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -66,52 +74,7 @@ export default async function CalendarioPage({ searchParams }: CalendarioPagePro
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-cream/10 bg-cream/10 text-xs">
-        {WEEKDAY_HEADERS.map((day) => (
-          <div key={day} className="bg-ink-soft px-2 py-2 text-center font-semibold text-cream/50">
-            {day}
-          </div>
-        ))}
-
-        {grid.map((day) => {
-          const dayAppointments = appointmentsByDate.get(day.iso) ?? [];
-          return (
-            <div
-              key={day.iso}
-              className={cn(
-                "min-h-24 bg-ink-soft p-1.5 sm:min-h-32 sm:p-2",
-                !day.inCurrentMonth && "bg-ink-soft/30"
-              )}
-            >
-              <span
-                className={cn(
-                  "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
-                  day.isToday ? "bg-gold text-ink" : day.inCurrentMonth ? "text-cream" : "text-cream/30"
-                )}
-              >
-                {format(day.date, "d")}
-              </span>
-
-              <div className="mt-1 flex flex-col gap-1">
-                {dayAppointments.slice(0, 3).map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="truncate rounded bg-cream/10 px-1.5 py-0.5 text-[11px] text-cream/70"
-                    title={`${formatTime(appointment.start_time)} · ${appointment.customer.name}`}
-                  >
-                    {formatTime(appointment.start_time)} {appointment.customer.name}
-                  </div>
-                ))}
-                {dayAppointments.length > 3 && (
-                  <span className="text-[11px] text-cream/40">
-                    +{dayAppointments.length - 3} más
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <CalendarGrid days={calendarDays} />
 
       <div className="mt-8">
         <h2 className="font-display text-lg font-semibold text-cream">Este mes de un vistazo</h2>
