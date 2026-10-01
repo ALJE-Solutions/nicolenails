@@ -39,16 +39,10 @@ export async function signOut() {
 
 export async function updateAppointmentStatus(
   id: string,
-  status: AppointmentStatus,
-  staffId?: string
+  status: AppointmentStatus
 ) {
   const supabase = await createClient();
-  const payload: { status: AppointmentStatus; staff_id?: string } = { status };
-  if (status === "accepted" && staffId) {
-    payload.staff_id = staffId;
-  }
-
-  const { error } = await supabase.from("appointments").update(payload).eq("id", id);
+  const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
 
   if (error) {
     if (error.code === "23P01") {
@@ -121,60 +115,6 @@ export async function deleteService(id: string) {
   }
 
   revalidatePath("/admin/servicios");
-  return { error: null };
-}
-
-// ---------------------------------------------------------------------------
-// Personal
-// ---------------------------------------------------------------------------
-
-export async function createStaff(formData: FormData) {
-  const supabase = await createClient();
-  const { error } = await supabase.from("staff").insert({
-    name: str(formData, "name"),
-  });
-
-  if (error) return { error: "No se ha podido crear el miembro del personal." };
-
-  revalidatePath("/admin/personal");
-  return { error: null };
-}
-
-export async function updateStaff(id: string, formData: FormData) {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("staff")
-    .update({ name: str(formData, "name") })
-    .eq("id", id);
-
-  if (error) return { error: "No se ha podido actualizar el personal." };
-
-  revalidatePath("/admin/personal");
-  return { error: null };
-}
-
-export async function toggleStaffActive(id: string, active: boolean) {
-  const supabase = await createClient();
-  const { error } = await supabase.from("staff").update({ active }).eq("id", id);
-
-  if (error) return { error: "No se ha podido cambiar el estado del personal." };
-
-  revalidatePath("/admin/personal");
-  return { error: null };
-}
-
-export async function deleteStaff(id: string) {
-  const supabase = await createClient();
-  const { error } = await supabase.from("staff").delete().eq("id", id);
-
-  if (error) {
-    return {
-      error:
-        "No se ha podido eliminar (puede tener citas asociadas). Puedes desactivarlo en su lugar.",
-    };
-  }
-
-  revalidatePath("/admin/personal");
   return { error: null };
 }
 

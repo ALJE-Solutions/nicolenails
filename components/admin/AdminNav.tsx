@@ -9,7 +9,6 @@ const LINKS = [
   { href: "/admin/citas", label: "Citas" },
   { href: "/admin/calendario", label: "Calendario" },
   { href: "/admin/servicios", label: "Servicios" },
-  { href: "/admin/personal", label: "Personal" },
   { href: "/admin/horarios", label: "Horarios" },
   { href: "/admin/bloqueos", label: "Bloqueos" },
 ];

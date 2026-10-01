@@ -17,10 +17,12 @@
 -- en vez de ejecutar este seed.
 
 delete from public.business_hours;
-delete from public.staff;
 delete from public.services;
 
 insert into public.services (name, description, price, duration_minutes) values
+  ('Manicura', null, 15.00, 20),
+  ('Manicura + Semipermanente', null, 20.00, 60),
+  ('Manicura + Nivelación', null, 28.00, 60),
   ('Relleno Solo Color', null, 28.00, 75),
   ('Relleno con Diseño', 'Precio desde 28€, varía según el diseño.', 28.00, 120),
   ('Uñas Nuevas Solo Color', null, 38.00, 90),
@@ -30,9 +32,6 @@ insert into public.services (name, description, price, duration_minutes) values
   ('Solo Pintar Pies', null, 15.00, 20),
   ('Lifting de Pestañas', null, 35.00, 60),
   ('Depilación de Cejas', 'Precio orientativo, entre 5€ y 7€ según el caso.', 6.00, 15);
-
-insert into public.staff (name) values
-  ('Nicole');
 
 -- Horario real: lunes a viernes 10:00-13:00 y 15:30-18:30, sábados solo
 -- mañana (10:00-13:00), domingo cerrado. day_of_week: 0 domingo … 6 sábado.

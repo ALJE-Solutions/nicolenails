@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatDateLong, formatDuration, formatPrice, formatTime } from "@/lib/format";
 import { updateAppointmentStatus } from "@/lib/admin/actions";
-import type { AppointmentStatus, AppointmentWithRelations, Staff } from "@/lib/types/database";
+import type { AppointmentStatus, AppointmentWithRelations } from "@/lib/types/database";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("es-ES", {
   dateStyle: "medium",
@@ -14,20 +14,18 @@ const dateTimeFormatter = new Intl.DateTimeFormat("es-ES", {
 
 interface AppointmentCardProps {
   appointment: AppointmentWithRelations;
-  availableStaff?: Staff[];
 }
 
-export function AppointmentCard({ appointment, availableStaff = [] }: AppointmentCardProps) {
+export function AppointmentCard({ appointment }: AppointmentCardProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<AppointmentStatus | null>(null);
-  const [staffId, setStaffId] = useState(availableStaff[0]?.id ?? "");
 
   function changeStatus(status: AppointmentStatus) {
     setError(null);
     setPendingAction(status);
     startTransition(async () => {
-      const result = await updateAppointmentStatus(appointment.id, status, staffId || undefined);
+      const result = await updateAppointmentStatus(appointment.id, status);
       if (result?.error) setError(result.error);
       setPendingAction(null);
     });
@@ -64,12 +62,6 @@ export function AppointmentCard({ appointment, availableStaff = [] }: Appointmen
           <p className="text-cream/40">Precio</p>
           <p className="font-medium text-cream">{formatPrice(appointment.service.price)}</p>
         </div>
-        {appointment.staff && (
-          <div>
-            <p className="text-cream/40">Asignada a</p>
-            <p className="font-medium text-gold">{appointment.staff.name}</p>
-          </div>
-        )}
       </div>
 
       <p className="mt-3 text-xs text-cream/35">
@@ -78,38 +70,13 @@ export function AppointmentCard({ appointment, availableStaff = [] }: Appointmen
 
       {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
 
-      {appointment.status === "pending" && (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {availableStaff.length > 1 ? (
-            <select
-              value={staffId}
-              onChange={(e) => setStaffId(e.target.value)}
-              disabled={isPending}
-              className="rounded-lg border border-cream/15 bg-cream/5 px-3 py-2 text-sm text-cream focus:border-gold focus:outline-none disabled:opacity-50"
-            >
-              {availableStaff.map((member) => (
-                <option key={member.id} value={member.id} className="text-ink">
-                  {member.name}
-                </option>
-              ))}
-            </select>
-          ) : availableStaff.length === 1 ? (
-            <p className="text-sm text-cream/50">
-              Se asignará a <span className="text-gold">{availableStaff[0].name}</span>.
-            </p>
-          ) : (
-            <p className="text-sm text-red-400">Nadie está libre en ese horario.</p>
-          )}
-        </div>
-      )}
-
       <div className="mt-4 flex flex-wrap gap-2">
         {appointment.status === "pending" && (
           <>
             <Button
               size="md"
               onClick={() => changeStatus("accepted")}
-              disabled={isPending || availableStaff.length === 0}
+              disabled={isPending}
             >
               {isPending && pendingAction === "accepted" ? "Aceptando…" : "Aceptar"}
             </Button>

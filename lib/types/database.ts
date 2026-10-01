@@ -50,7 +50,6 @@ export type Appointment = {
 export type AppointmentWithRelations = Appointment & {
   customer: Customer;
   service: Service;
-  staff: Staff | null;
 };
 
 export type BusinessHour = {

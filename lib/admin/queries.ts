@@ -5,7 +5,6 @@ import type {
   BlockedSlot,
   BusinessHour,
   Service,
-  Staff,
 } from "@/lib/types/database";
 
 export async function isCurrentUserAdmin(): Promise<boolean> {
@@ -21,7 +20,7 @@ export async function getAppointments(
   const supabase = await createClient();
   let query = supabase
     .from("appointments")
-    .select("*, customer:customers(*), service:services(*), staff:staff(*)")
+    .select("*, customer:customers(*), service:services(*)")
     .order("date", { ascending: true })
     .order("start_time", { ascending: true });
 
@@ -45,7 +44,7 @@ export async function getAppointmentsInRange(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("appointments")
-    .select("*, customer:customers(*), service:services(*), staff:staff(*)")
+    .select("*, customer:customers(*), service:services(*)")
     .gte("date", startDate)
     .lte("date", endDate)
     .order("start_time", { ascending: true });
@@ -71,46 +70,6 @@ export async function getAllServices(): Promise<Service[]> {
   }
 
   return data ?? [];
-}
-
-export async function getAllStaff(): Promise<Staff[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("staff")
-    .select("*")
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    console.error("Error al cargar el personal:", error.message);
-    return [];
-  }
-
-  return data ?? [];
-}
-
-export type StaffBooking = {
-  staff_id: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-};
-
-// Citas ya ACEPTADAS con personal asignado: se usan para calcular quién está
-// libre en un horario concreto (ver lib/admin/staffAvailability.ts).
-export async function getAcceptedStaffBookings(): Promise<StaffBooking[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("appointments")
-    .select("staff_id, date, start_time, end_time")
-    .eq("status", "accepted")
-    .not("staff_id", "is", null);
-
-  if (error) {
-    console.error("Error al cargar la ocupación del personal:", error.message);
-    return [];
-  }
-
-  return (data ?? []) as StaffBooking[];
 }
 
 export async function getBusinessHours(): Promise<BusinessHour[]> {

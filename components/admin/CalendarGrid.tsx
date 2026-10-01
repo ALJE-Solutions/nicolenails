@@ -133,9 +133,6 @@ export function CalendarGrid({ days }: { days: CalendarGridDay[] }) {
                     <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-cream/50">
                       <p>Duración: {formatDuration(appointment.service.duration_minutes)}</p>
                       <p>Precio: {formatPrice(appointment.service.price)}</p>
-                      {appointment.staff && (
-                        <p className="col-span-2 text-gold">Con {appointment.staff.name}</p>
-                      )}
                     </div>
                   </div>
                 ))
