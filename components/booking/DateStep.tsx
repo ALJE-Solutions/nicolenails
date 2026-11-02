@@ -10,7 +10,7 @@ interface DateStepProps {
 }
 
 export function DateStep({ selectedDate, onSelect }: DateStepProps) {
-  const days = useMemo(() => getBookableDays(45), []);
+  const days = useMemo(() => getBookableDays(), []);
 
   return (
     <div>

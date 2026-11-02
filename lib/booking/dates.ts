@@ -17,7 +17,7 @@ function toIso(date: Date): string {
 }
 
 /** Próximos `days` días a partir de hoy (incluido), en horario local. */
-export function getBookableDays(days = 45): BookableDay[] {
+export function getBookableDays(days = 90): BookableDay[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
